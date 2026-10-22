@@ -101,7 +101,7 @@ async function cutClip(src: string, start: number, length: number, onProgress: (
   const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 5_000_000 });
   const chunks: Blob[] = [];
   rec.ondataavailable = (e) => e.data.size && chunks.push(e.data);
-  const done = new Promise<Blob>((res) => (rec.onstop = () => res(new Blob(chunks, { type: mime.split(";")[0] }))));
+  const done = new Promise<Blob>((res) => (rec.onstop = () => res(new Blob(chunks, { type: mime.split(";")[0] ?? mime }))));
   rec.start(250);
   await v.play();
   await new Promise<void>((res) => {
