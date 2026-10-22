@@ -128,13 +128,13 @@ function Studio() {
     return () => clearInterval(t);
   }, [busy]);
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    cancelled.current = false;
+    return () => {
       cancelled.current = true;
       if (pollTimer.current) clearTimeout(pollTimer.current);
-    },
-    [],
-  );
+    };
+  }, []);
 
   const changeMode = (m: Mode) => {
     setMode(m);
