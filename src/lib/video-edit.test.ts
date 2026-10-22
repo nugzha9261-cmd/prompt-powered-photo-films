@@ -10,7 +10,8 @@ const base = {
   aspectRatio: "16:9" as const,
 };
 const ok = (v: unknown) => editVideoSchema.safeParse(v).success;
-const passed = (c: Parameters<typeof checkClip>[0]) => Object.fromEntries(checkClip(c).map((i) => [i.key, i.ok]));
+const passed = (c: Parameters<typeof checkClip>[0]) =>
+  Object.fromEntries(checkClip(c).map((i) => [i.key, i.ok])) as Record<"format" | "size" | "duration", boolean>;
 
 describe("video edit rules", () => {
   it("rounds clip length to 0.1s", () => {
