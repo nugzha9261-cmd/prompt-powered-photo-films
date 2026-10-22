@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { buildEditRequest, editVideoSchema } from "./video-edit";
 import { buildVideoRequest, startVideoSchema } from "./video-request";
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev";
@@ -80,6 +81,42 @@ export const startVideo = createServerFn({ method: "POST" })
       else await supabaseAdmin.from("videos").update({ poster_path: posterPath }).eq("id", row.id);
     }
 
+    return { ok: true as const, id: row.id };
+  });
+
+/** Starts an edit of an uploaded clip; saved like any other video and finished by syncVideo. */
+export const startEdit = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => editVideoSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const response = await fetch(`${GATEWAY_URL}/v1/videos`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${requireKey()}`, "Content-Type": "application/json" },
+      body: JSON.stringify(buildEditRequest(data)),
+    });
+    if (!response.ok) {
+      return { ok: false as const, error: await gatewayErrorMessage(response) };
+    }
+    const job = (await response.json()) as { id: string; status: JobStatus };
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row, error } = await supabaseAdmin
+      .from("videos")
+      .insert({
+        user_id: context.userId,
+        job_id: job.id,
+        mode: "edit",
+        prompt: data.prompt,
+        duration: Math.round(data.seconds),
+        aspect_ratio: data.aspectRatio,
+        status: "generating",
+      })
+      .select("id")
+      .single();
+    if (error || !row) {
+      console.error("Could not save edit row", error);
+      return { ok: false as const, error: "Your edit started but could not be saved to your account." };
+    }
     return { ok: true as const, id: row.id };
   });
 

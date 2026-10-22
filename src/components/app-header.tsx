@@ -24,6 +24,13 @@ export function AppHeader() {
               Studio
             </Link>
             <Link
+              to="/edit"
+              className="rounded-sm px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
+              activeProps={{ className: "text-foreground" }}
+            >
+              Edit video
+            </Link>
+            <Link
               to="/library"
               className="rounded-sm px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
               activeProps={{ className: "text-foreground" }}
