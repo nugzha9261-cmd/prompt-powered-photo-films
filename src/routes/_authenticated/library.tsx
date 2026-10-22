@@ -42,6 +42,7 @@ const MODE_LABEL: Record<string, string> = {
   first_last: "First → last",
   storyboard: "Storyboard",
   reference: "Reference",
+  edit: "Video edit",
 };
 
 async function fetchVideos() {
