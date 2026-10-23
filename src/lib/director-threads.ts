@@ -76,9 +76,12 @@ export function latestOrNewThread(): DirectorThread {
 export function saveMessages(id: string, messages: UIMessage[]) {
   const threads = read();
   const existing = threads.find((t) => t.id === id);
-  if (existing && existing.messages.length === messages.length && messages.length > 0) {
-    const lastOld = JSON.stringify(existing.messages.at(-1));
-    if (lastOld === JSON.stringify(messages.at(-1))) return;
+  if (
+    existing &&
+    existing.messages.length === messages.length &&
+    JSON.stringify(existing.messages.at(-1)) === JSON.stringify(messages.at(-1))
+  ) {
+    return;
   }
   const next: DirectorThread = {
     id,
