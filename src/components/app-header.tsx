@@ -31,6 +31,13 @@ export function AppHeader() {
               Edit video
             </Link>
             <Link
+              to="/director"
+              className="rounded-sm px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
+              activeProps={{ className: "text-foreground" }}
+            >
+              AI Director
+            </Link>
+            <Link
               to="/library"
               className="rounded-sm px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
               activeProps={{ className: "text-foreground" }}
