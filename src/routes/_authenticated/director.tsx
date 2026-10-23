@@ -52,7 +52,7 @@ function DirectorLayout() {
         <aside className="flex min-w-0 flex-col gap-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <img src={directorMark} alt="AI Director" width={32} height={32} className="size-8" />
+              <img src={directorMark} alt="AI Director" width={32} height={32} className="size-8 rounded-full bg-foreground p-0.5" />
               <span className="font-display text-2xl">AI Director</span>
             </div>
             <Button size="sm" variant="outline" onClick={newChat}>

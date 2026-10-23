@@ -84,7 +84,7 @@ export function DirectorChat({ threadId, initialMessages }: { threadId: string; 
         <ConversationContent className="gap-6 px-4 py-6 sm:px-6">
           {messages.length === 0 ? (
             <div className="mx-auto flex max-w-md flex-col items-center py-8 text-center">
-              <img src={directorMark} alt="" width={96} height={96} className="size-24" />
+              <img src={directorMark} alt="" width={96} height={96} className="size-24 rounded-full bg-foreground p-2" />
               <h2 className="mt-3 font-display text-4xl">Your AI Director</h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 Say what you want in your own words. I&apos;ll ask a couple of questions and write a
@@ -140,7 +140,7 @@ export function DirectorChat({ threadId, initialMessages }: { threadId: string; 
           )}
           {status === "submitted" && (
             <div className="flex items-center gap-2 text-sm">
-              <img src={directorMark} alt="" width={20} height={20} className="size-5" />
+              <img src={directorMark} alt="" width={20} height={20} className="size-5 rounded-full bg-foreground p-px" />
               <Shimmer>Thinking about your shot…</Shimmer>
             </div>
           )}

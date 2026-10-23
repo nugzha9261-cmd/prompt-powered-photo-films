@@ -9,7 +9,7 @@ export function AskDirectorLink() {
       to="/director"
       className="mb-2.5 inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
     >
-      <img src={directorMark} alt="" width={18} height={18} className="size-[18px]" />
+      <img src={directorMark} alt="" width={18} height={18} className="size-[18px] rounded-full bg-foreground p-px" />
       Not sure what to write? Ask the AI Director
     </Link>
   );
