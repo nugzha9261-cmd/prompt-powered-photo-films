@@ -11,7 +11,11 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "cap:sync": "cap sync",
+    "cap:ios": "cap open ios",
+    "cap:android": "cap open android",
+    "cap:icons": "bunx @capacitor/assets generate --iconBackgroundColor '#0b0907' --splashBackgroundColor '#0b0907'"
   },
   "overrides": {
     "rolldown": "1.2.1"
