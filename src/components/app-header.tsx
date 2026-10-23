@@ -49,8 +49,9 @@ export function AppHeader() {
               size="sm"
               onClick={() => void signOut()}
               title={session.user.email ?? undefined}
+              aria-label="Sign out"
             >
-              <LogOut /> Sign out
+              <LogOut /> <span className="hidden sm:inline">Sign out</span>
             </Button>
           </>
         ) : ready ? (
