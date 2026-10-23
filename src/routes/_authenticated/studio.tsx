@@ -19,6 +19,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { AppHeader, StepLabel } from "@/components/app-header";
+import { AskDirectorLink } from "@/components/director/ask-director-link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -40,6 +41,8 @@ import {
 } from "@/lib/video-request";
 
 export const Route = createFileRoute("/_authenticated/studio")({
+  validateSearch: (search: Record<string, unknown>): { prompt?: string } =>
+    typeof search["prompt"] === "string" ? { prompt: search["prompt"].slice(0, MAX_PROMPT_LENGTH) } : {},
   head: () => ({
     meta: [
       { title: "Studio — Lumière" },
@@ -106,7 +109,8 @@ function Studio() {
 
   const [mode, setMode] = useState<Mode>("single");
   const [slots, setSlots] = useState<Slot[]>([{ photo: null, caption: "" }]);
-  const [prompt, setPrompt] = useState("");
+  const search = Route.useSearch();
+  const [prompt, setPrompt] = useState(search.prompt ?? "");
   const [duration, setDuration] = useState<Duration>(5);
   const [aspect, setAspect] = useState<AspectRatio>("16:9");
   const [phase, setPhase] = useState<Phase>("idle");
@@ -318,7 +322,10 @@ function Studio() {
             </div>
 
             <div>
-              <StepLabel n={3}>What should happen?</StepLabel>
+              <div className="flex flex-wrap items-baseline justify-between gap-x-3">
+                <StepLabel n={3}>What should happen?</StepLabel>
+                <AskDirectorLink />
+              </div>
               <Textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}

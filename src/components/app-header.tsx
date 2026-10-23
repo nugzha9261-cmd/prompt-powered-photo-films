@@ -13,26 +13,33 @@ export function AppHeader() {
         <span className="size-2.5 rounded-full bg-safelight shadow-[0_0_14px_var(--safelight)]" />
         <span className="font-display text-2xl tracking-wide">Lumière</span>
       </Link>
-      <nav className="flex items-center gap-1 text-sm">
+      <nav className="-mx-2 flex max-w-full items-center gap-0.5 overflow-x-auto whitespace-nowrap text-sm sm:mx-0 sm:gap-1">
         {ready && session ? (
           <>
             <Link
               to="/studio"
-              className="rounded-sm px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
+              className="rounded-sm px-2 py-1.5 text-muted-foreground sm:px-3 transition-colors hover:text-foreground"
               activeProps={{ className: "text-foreground" }}
             >
               Studio
             </Link>
             <Link
               to="/edit"
-              className="rounded-sm px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
+              className="rounded-sm px-2 py-1.5 text-muted-foreground sm:px-3 transition-colors hover:text-foreground"
               activeProps={{ className: "text-foreground" }}
             >
               Edit video
             </Link>
             <Link
+              to="/director"
+              className="rounded-sm px-2 py-1.5 text-muted-foreground sm:px-3 transition-colors hover:text-foreground"
+              activeProps={{ className: "text-foreground" }}
+            >
+              AI Director
+            </Link>
+            <Link
               to="/library"
-              className="rounded-sm px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
+              className="rounded-sm px-2 py-1.5 text-muted-foreground sm:px-3 transition-colors hover:text-foreground"
               activeProps={{ className: "text-foreground" }}
             >
               My films
@@ -42,8 +49,9 @@ export function AppHeader() {
               size="sm"
               onClick={() => void signOut()}
               title={session.user.email ?? undefined}
+              aria-label="Sign out"
             >
-              <LogOut /> Sign out
+              <LogOut /> <span className="hidden sm:inline">Sign out</span>
             </Button>
           </>
         ) : ready ? (

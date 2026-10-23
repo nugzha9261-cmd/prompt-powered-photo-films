@@ -13,9 +13,13 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthenticatedDirectorRouteImport } from './routes/_authenticated/director'
 import { Route as AuthenticatedEditRouteImport } from './routes/_authenticated/edit'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 import { Route as AuthenticatedStudioRouteImport } from './routes/_authenticated/studio'
+import { Route as ApiDirectorRouteImport } from './routes/api/director'
+import { Route as AuthenticatedDirectorIndexRouteImport } from './routes/_authenticated/director.index'
+import { Route as AuthenticatedDirectorThreadIdRouteImport } from './routes/_authenticated/director.$threadId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -36,6 +40,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDirectorRoute = AuthenticatedDirectorRouteImport.update({
+  id: '/director',
+  path: '/director',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedEditRoute = AuthenticatedEditRouteImport.update({
   id: '/edit',
   path: '/edit',
@@ -51,14 +60,35 @@ const AuthenticatedStudioRoute = AuthenticatedStudioRouteImport.update({
   path: '/studio',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiDirectorRoute = ApiDirectorRouteImport.update({
+  id: '/api/director',
+  path: '/api/director',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDirectorIndexRoute =
+  AuthenticatedDirectorIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedDirectorRoute,
+  } as any)
+const AuthenticatedDirectorThreadIdRoute =
+  AuthenticatedDirectorThreadIdRouteImport.update({
+    id: '/$threadId',
+    path: '/$threadId',
+    getParentRoute: () => AuthenticatedDirectorRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/director': typeof AuthenticatedDirectorRouteWithChildren
   '/edit': typeof AuthenticatedEditRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/studio': typeof AuthenticatedStudioRoute
+  '/api/director': typeof ApiDirectorRoute
+  '/director/$threadId': typeof AuthenticatedDirectorThreadIdRoute
+  '/director/': typeof AuthenticatedDirectorIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -67,6 +97,9 @@ export interface FileRoutesByTo {
   '/edit': typeof AuthenticatedEditRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/studio': typeof AuthenticatedStudioRoute
+  '/api/director': typeof ApiDirectorRoute
+  '/director/$threadId': typeof AuthenticatedDirectorThreadIdRoute
+  '/director': typeof AuthenticatedDirectorIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -74,25 +107,51 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/director': typeof AuthenticatedDirectorRouteWithChildren
   '/_authenticated/edit': typeof AuthenticatedEditRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/studio': typeof AuthenticatedStudioRoute
+  '/api/director': typeof ApiDirectorRoute
+  '/_authenticated/director/$threadId': typeof AuthenticatedDirectorThreadIdRoute
+  '/_authenticated/director/': typeof AuthenticatedDirectorIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/reset-password' | '/edit' | '/library' | '/studio'
+    | '/'
+    | '/auth'
+    | '/reset-password'
+    | '/director'
+    | '/edit'
+    | '/library'
+    | '/studio'
+    | '/api/director'
+    | '/director/$threadId'
+    | '/director/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/reset-password' | '/edit' | '/library' | '/studio'
+  to:
+    | '/'
+    | '/auth'
+    | '/reset-password'
+    | '/edit'
+    | '/library'
+    | '/studio'
+    | '/api/director'
+    | '/director/$threadId'
+    | '/director'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/director'
     | '/_authenticated/edit'
     | '/_authenticated/library'
     | '/_authenticated/studio'
+    | '/api/director'
+    | '/_authenticated/director/$threadId'
+    | '/_authenticated/director/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -100,6 +159,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiDirectorRoute: typeof ApiDirectorRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -132,6 +192,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/director': {
+      id: '/_authenticated/director'
+      path: '/director'
+      fullPath: '/director'
+      preLoaderRoute: typeof AuthenticatedDirectorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/edit': {
       id: '/_authenticated/edit'
       path: '/edit'
@@ -153,16 +220,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStudioRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/director': {
+      id: '/api/director'
+      path: '/api/director'
+      fullPath: '/api/director'
+      preLoaderRoute: typeof ApiDirectorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/director/': {
+      id: '/_authenticated/director/'
+      path: '/'
+      fullPath: '/director/'
+      preLoaderRoute: typeof AuthenticatedDirectorIndexRouteImport
+      parentRoute: typeof AuthenticatedDirectorRoute
+    }
+    '/_authenticated/director/$threadId': {
+      id: '/_authenticated/director/$threadId'
+      path: '/$threadId'
+      fullPath: '/director/$threadId'
+      preLoaderRoute: typeof AuthenticatedDirectorThreadIdRouteImport
+      parentRoute: typeof AuthenticatedDirectorRoute
+    }
   }
 }
 
+interface AuthenticatedDirectorRouteChildren {
+  AuthenticatedDirectorThreadIdRoute: typeof AuthenticatedDirectorThreadIdRoute
+  AuthenticatedDirectorIndexRoute: typeof AuthenticatedDirectorIndexRoute
+}
+
+const AuthenticatedDirectorRouteChildren: AuthenticatedDirectorRouteChildren = {
+  AuthenticatedDirectorThreadIdRoute: AuthenticatedDirectorThreadIdRoute,
+  AuthenticatedDirectorIndexRoute: AuthenticatedDirectorIndexRoute,
+}
+
+const AuthenticatedDirectorRouteWithChildren =
+  AuthenticatedDirectorRoute._addFileChildren(
+    AuthenticatedDirectorRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDirectorRoute: typeof AuthenticatedDirectorRouteWithChildren
   AuthenticatedEditRoute: typeof AuthenticatedEditRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedStudioRoute: typeof AuthenticatedStudioRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDirectorRoute: AuthenticatedDirectorRouteWithChildren,
   AuthenticatedEditRoute: AuthenticatedEditRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedStudioRoute: AuthenticatedStudioRoute,
@@ -176,6 +281,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiDirectorRoute: ApiDirectorRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
