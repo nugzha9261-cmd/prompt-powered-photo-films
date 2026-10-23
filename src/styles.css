@@ -144,10 +144,18 @@
     border-color: var(--color-border);
   }
 
+  html {
+    background-color: var(--color-background);
+  }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    /* Keeps content clear of the notch and home bar inside the phone apps (0 in normal browsers). */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 }
 
