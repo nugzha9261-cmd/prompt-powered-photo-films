@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { rememberAfterAuth, useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import { isNativeApp } from "@/lib/native";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -34,6 +35,9 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  // Google blocks sign-in inside app web views, so the phone apps use email only.
+  const [nativeApp, setNativeApp] = useState(false);
+  useEffect(() => setNativeApp(isNativeApp()), []);
 
   useEffect(() => {
     if (ready && session) void navigate({ to: "/studio", replace: true });
@@ -113,7 +117,7 @@ function AuthPage() {
               Every video you make is saved to your account, so you can watch or download it any time.
             </p>
 
-            {view !== "forgot" && (
+            {view !== "forgot" && !nativeApp && (
               <>
                 <Button
                   type="button"
@@ -130,7 +134,7 @@ function AuthPage() {
               </>
             )}
 
-            <form onSubmit={submit} className={view === "forgot" ? "mt-8 space-y-4" : "space-y-4"}>
+            <form onSubmit={submit} className={view === "forgot" || nativeApp ? "mt-8 space-y-4" : "space-y-4"}>
               <div className="space-y-1.5">
                 <Label htmlFor="email">Email</Label>
                 <Input
