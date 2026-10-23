@@ -21,9 +21,12 @@ import {
 } from "@/lib/video-edit";
 import { downloadVideo, signedUrls } from "@/lib/video-files";
 import { MAX_PROMPT_LENGTH, aspectForSize } from "@/lib/video-request";
+import { AskDirectorLink } from "@/components/director/ask-director-link";
 import { startEdit, syncVideo } from "@/lib/video.functions";
 
 export const Route = createFileRoute("/_authenticated/edit")({
+  validateSearch: (search: Record<string, unknown>): { prompt?: string } =>
+    typeof search["prompt"] === "string" ? { prompt: search["prompt"].slice(0, MAX_PROMPT_LENGTH) } : {},
   head: () => ({
     meta: [
       { title: "Edit a video — Lumière" },
@@ -128,7 +131,8 @@ function EditPage() {
   const [trimStart, setTrimStart] = useState(0);
   const [trimLength, setTrimLength] = useState(EDIT_MAX_SECONDS);
   const [cutting, setCutting] = useState<number | null>(null);
-  const [prompt, setPrompt] = useState("");
+  const search = Route.useSearch();
+  const [prompt, setPrompt] = useState(search.prompt ?? "");
   const [phase, setPhase] = useState<Phase>("idle");
   const [progress, setProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -370,7 +374,10 @@ function EditPage() {
             )}
 
             <div>
-              <StepLabel n={3}>What should change?</StepLabel>
+              <div className="flex flex-wrap items-baseline justify-between gap-x-3">
+                <StepLabel n={3}>What should change?</StepLabel>
+                <AskDirectorLink />
+              </div>
               <Textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
