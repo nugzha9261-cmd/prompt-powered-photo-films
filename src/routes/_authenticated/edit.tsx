@@ -13,8 +13,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import {
   EDIT_MAX_SECONDS,
+  EDIT_UPLOAD_MAX_SECONDS,
   EDIT_MIN_SECONDS,
-  checkClip,
+  checkUpload,
   editVideoSchema,
   normalizeMime,
   roundDuration,
@@ -22,7 +23,7 @@ import {
 import { downloadVideo, signedUrls } from "@/lib/video-files";
 import { MAX_PROMPT_LENGTH, aspectForSize } from "@/lib/video-request";
 import { AskDirectorLink } from "@/components/director/ask-director-link";
-import { startEdit, syncVideo } from "@/lib/video.functions";
+import { startEdit, syncVideo, saveJoinedEdit } from "@/lib/video.functions";
 
 export const Route = createFileRoute("/_authenticated/edit")({
   validateSearch: (search: Record<string, unknown>): { prompt?: string } =>
@@ -123,18 +124,20 @@ async function cutClip(src: string, start: number, length: number, onProgress: (
 function EditPage() {
   const begin = useServerFn(startEdit);
   const sync = useServerFn(syncVideo);
+  const saveJoined = useServerFn(saveJoinedEdit);
   const queryClient = useQueryClient();
 
   const [clip, setClip] = useState<Clip | null>(null);
   const [loading, setLoading] = useState(false);
   const [showLibrary, setShowLibrary] = useState(false);
   const [trimStart, setTrimStart] = useState(0);
-  const [trimLength, setTrimLength] = useState(EDIT_MAX_SECONDS);
+  const [trimLength, setTrimLength] = useState(EDIT_UPLOAD_MAX_SECONDS);
   const [cutting, setCutting] = useState<number | null>(null);
   const search = Route.useSearch();
   const [prompt, setPrompt] = useState(search.prompt ?? "");
   const [phase, setPhase] = useState<Phase>("idle");
   const [progress, setProgress] = useState<number | null>(null);
+  const [stage, setStage] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ url: string; path: string } | null>(null);
   const input = useRef<HTMLInputElement>(null);
@@ -150,7 +153,7 @@ function EditPage() {
     };
   }, []);
 
-  const checks = clip ? checkClip({ mime: clip.mime, bytes: clip.file.size, seconds: clip.seconds }) : [];
+  const checks = clip ? checkUpload({ mime: clip.mime, bytes: clip.file.size, seconds: clip.seconds }) : [];
   const allOk = checks.length > 0 && checks.every((c) => c.ok);
   const formatOk = checks.find((c) => c.key === "format")?.ok ?? false;
   const needsCut = clip !== null && formatOk && !allOk;
@@ -166,7 +169,7 @@ function EditPage() {
         return { file, url, mime, name, ...meta };
       });
       setTrimStart(0);
-      setTrimLength(Math.max(EDIT_MIN_SECONDS, Math.min(EDIT_MAX_SECONDS, Math.floor(meta.seconds * 10) / 10)));
+      setTrimLength(Math.max(EDIT_MIN_SECONDS, Math.min(EDIT_UPLOAD_MAX_SECONDS, Math.floor(meta.seconds * 10) / 10)));
       setResult(null);
       setPhase("idle");
       setError(null);
@@ -208,7 +211,9 @@ function EditPage() {
         setProgress(r.progress);
         if (r.status === "ready" && r.storagePath) {
           const urls = await signedUrls([r.storagePath]);
-          setResult({ url: urls[r.storagePath]!, path: r.storagePath });
+          const url = urls[r.storagePath];
+          if (!url) return fail("Could not open the saved video.");
+          setResult({ url, path: r.storagePath });
           setPhase("done");
           void queryClient.invalidateQueries({ queryKey: ["videos"] });
         } else if (r.status === "failed") fail(r.error ?? "The edit could not be made.");
@@ -226,9 +231,66 @@ function EditPage() {
     setError(null);
     setResult(null);
     setProgress(null);
+    setStage("");
     try {
+      const mimeType = normalizeMime(clip.mime);
+      if (!mimeType) throw new Error("Use an MP4, WebM or MOV video.");
+      if (clip.seconds > EDIT_MAX_SECONDS) {
+        setStage("Preparing sections…");
+        const { createVideoProcessor } = await import("@/lib/video-processing");
+        const processor = await createVideoProcessor();
+        try {
+          const parts = await processor.split(clip.file, clip.seconds);
+          const ids: string[] = [];
+          const files: Blob[] = [];
+          for (const [i, part] of parts.entries()) {
+            if (cancelled.current) return;
+            setStage(`Editing section ${i + 1} of ${parts.length}…`);
+            const data = editVideoSchema.parse({
+              video: { data: await toBase64(part.file), mimeType: "video/mp4" },
+              seconds: part.seconds, prompt, aspectRatio: aspectForSize(clip.width, clip.height),
+            });
+            const job = await begin({ data });
+            if (!job.ok) throw new Error(job.error);
+            ids.push(job.id);
+            setPhase("generating");
+            void queryClient.invalidateQueries({ queryKey: ["videos"] });
+            let path: string | null = null;
+            let transient = 0;
+            while (!path) {
+              await new Promise(resolve => setTimeout(resolve, 6000));
+              if (cancelled.current) return;
+              const r = await sync({ data: { id: job.id } });
+              if (!r.ok) {
+                if (r.transient && transient++ < 5) continue;
+                throw new Error(r.error);
+              }
+              transient = 0;
+              setProgress((i + (r.progress ?? 0) / 100) / parts.length * 100);
+              if (r.status === "failed") throw new Error(r.error ?? "A section could not be edited. Completed sections are in My films.");
+              if (r.status === "ready") path = r.storagePath;
+            }
+            const url = (await signedUrls([path]))[path];
+            if (!url) throw new Error("Could not open an edited section.");
+            const response = await fetch(url);
+            if (!response.ok) throw new Error("Could not download an edited section.");
+            files.push(await response.blob());
+          }
+          setStage("Joining and saving your video…");
+          const joined = await processor.join(files);
+          const saved = await saveJoined({ data: { ids, data: await toBase64(joined) } });
+          const url = (await signedUrls([saved.path]))[saved.path];
+          if (!url) throw new Error("Your video saved but could not be opened. Check My films.");
+          if (!cancelled.current) {
+            setResult({ url, path: saved.path });
+            setPhase("done");
+            void queryClient.invalidateQueries({ queryKey: ["videos"] });
+          }
+        } finally { processor.close(); }
+        return;
+      }
       const data = {
-        video: { data: await toBase64(clip.file), mimeType: normalizeMime(clip.mime)! },
+        video: { data: await toBase64(clip.file), mimeType },
         seconds: roundDuration(clip.seconds),
         prompt,
         aspectRatio: aspectForSize(clip.width, clip.height),
@@ -293,7 +355,8 @@ function EditPage() {
                     setLoading(true);
                     try {
                       const url = (await signedUrls([path]))[path];
-                      const blob = await (await fetch(url!)).blob();
+                      if (!url) throw new Error("Could not open that film.");
+                      const blob = await (await fetch(url)).blob();
                       await loadClip(new Blob([blob], { type: "video/mp4" }), "film.mp4");
                     } catch {
                       toast.error("Could not load that film.");
@@ -321,7 +384,9 @@ function EditPage() {
                   ))}
                   {allOk && (
                     <li className="pt-1 text-xs text-muted-foreground">
-                      All good. The edit will be exactly {roundDuration(clip.seconds)}s, matching your clip.
+                      {clip.seconds > EDIT_MAX_SECONDS
+                        ? "Sections are edited separately and joined. Visual or audio changes may be noticeable at the joins."
+                        : `All good. The edit matches your ${roundDuration(clip.seconds)}s clip.`}
                     </li>
                   )}
                 </ul>
@@ -349,11 +414,11 @@ function EditPage() {
                       <p className="mb-2 text-xs text-muted-foreground">Length: {trimLength.toFixed(1)}s</p>
                       <Slider
                         min={EDIT_MIN_SECONDS}
-                        max={Math.min(EDIT_MAX_SECONDS, Math.floor(clip.seconds * 10) / 10)}
+                        max={Math.min(EDIT_UPLOAD_MAX_SECONDS, Math.floor(clip.seconds * 10) / 10)}
                         step={0.1}
                         value={[trimLength]}
                         onValueChange={([v]) => {
-                          const len = v ?? EDIT_MAX_SECONDS;
+                          const len = v ?? EDIT_UPLOAD_MAX_SECONDS;
                           setTrimLength(len);
                           setTrimStart((s) => Math.min(s, Math.max(0, roundDuration(clip.seconds - len))));
                         }}
@@ -436,7 +501,7 @@ function EditPage() {
                       <span className="size-3 animate-pulse rounded-full bg-safelight shadow-[0_0_24px_var(--safelight)]" />
                       <p className="font-display text-2xl">Developing…</p>
                       <p className="text-xs text-muted-foreground">
-                        usually 1–3 minutes{progress != null ? ` · ${Math.round(progress)}%` : ""}
+                        {stage || "usually 1–3 minutes"}{progress != null ? ` · ${Math.round(progress)}%` : ""}
                       </p>
                     </div>
                   )}
@@ -445,7 +510,7 @@ function EditPage() {
                 <div className="flex flex-col items-center gap-3 p-8 text-center text-muted-foreground">
                   <Film className="size-8 text-primary/70" />
                   <p className="font-display text-2xl text-foreground">Your edit appears here</p>
-                  <p className="max-w-xs text-sm">MP4, WebM or MOV · 3–10 seconds · up to 40 MB</p>
+                  <p className="max-w-xs text-sm">MP4, WebM or MOV · 3–30 seconds · up to 40 MB</p>
                 </div>
               )}
             </div>
@@ -453,7 +518,9 @@ function EditPage() {
 
           {busy && (
             <p className="mt-4 text-xs text-muted-foreground">
-              You can leave this page — the edit keeps developing and appears in My films.
+              {clip && clip.seconds > EDIT_MAX_SECONDS
+                ? "Keep this page open until joining finishes. Each section is saved in My films as it completes."
+                : "You can leave this page — the edit keeps developing and appears in My films."}
             </p>
           )}
           {phase === "error" && error && (
