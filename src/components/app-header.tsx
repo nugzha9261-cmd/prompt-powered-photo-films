@@ -3,6 +3,7 @@ import { LogOut } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import { CreditsBadge } from "@/components/credits/credits-badge";
 
 export function AppHeader() {
   const { session, ready, signOut } = useAuth();
@@ -44,6 +45,7 @@ export function AppHeader() {
             >
               My films
             </Link>
+            <CreditsBadge />
             <Button
               variant="ghost"
               size="sm"

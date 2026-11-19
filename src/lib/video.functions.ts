@@ -4,6 +4,21 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { buildEditRequest, editVideoSchema, joinedEditSchema, EDIT_UPLOAD_MAX_SECONDS } from "./video-edit";
 import { buildVideoRequest, startVideoSchema } from "./video-request";
+import { CREDITS_PER_EDIT, CREDITS_PER_VIDEO, OUT_OF_CREDITS } from "./credits";
+
+/** Atomically takes credits before a paid job; false when the balance is too low. */
+async function spend(userId: string, amount: number) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin.rpc("spend_credits", { _user_id: userId, _amount: amount });
+  if (error) throw new Error("Could not check your credits. Please try again.");
+  return data !== null;
+}
+async function refund(userId: string, amount: number) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { error } = await supabaseAdmin.rpc("add_credits", { _user_id: userId, _amount: amount });
+  if (error) console.error("Credit refund failed", userId, error);
+}
+const outOfCredits = { ok: false as const, error: "You're out of credits. Get more to keep making videos.", code: OUT_OF_CREDITS };
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev";
 const BUCKET = "videos";
@@ -40,12 +55,14 @@ export const startVideo = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => startVideoSchema.parse(input))
   .handler(async ({ data, context }) => {
+    if (!(await spend(context.userId, CREDITS_PER_VIDEO))) return outOfCredits;
     const response = await fetch(`${GATEWAY_URL}/v1/videos`, {
       method: "POST",
       headers: { Authorization: `Bearer ${requireKey()}`, "Content-Type": "application/json" },
       body: JSON.stringify(buildVideoRequest(data)),
     });
     if (!response.ok) {
+      await refund(context.userId, CREDITS_PER_VIDEO);
       return { ok: false as const, error: await gatewayErrorMessage(response) };
     }
     const job = (await response.json()) as { id: string; status: JobStatus };
@@ -89,12 +106,14 @@ export const startEdit = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => editVideoSchema.parse(input))
   .handler(async ({ data, context }) => {
+    if (!(await spend(context.userId, CREDITS_PER_EDIT))) return outOfCredits;
     const response = await fetch(`${GATEWAY_URL}/v1/videos`, {
       method: "POST",
       headers: { Authorization: `Bearer ${requireKey()}`, "Content-Type": "application/json" },
       body: JSON.stringify(buildEditRequest(data)),
     });
     if (!response.ok) {
+      await refund(context.userId, CREDITS_PER_EDIT);
       return { ok: false as const, error: await gatewayErrorMessage(response) };
     }
     const job = (await response.json()) as { id: string; status: JobStatus };

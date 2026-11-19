@@ -8,6 +8,13 @@
       "when": 1792645994914,
       "tag": "0000_create_videos",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795113503275,
+      "tag": "0001_user_credits",
+      "breakpoints": true
     }
   ]
 }

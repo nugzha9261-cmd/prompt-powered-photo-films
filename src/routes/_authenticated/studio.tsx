@@ -1,3 +1,5 @@
+import { creditsKey, openPaywall } from "@/hooks/use-credits";
+import { OUT_OF_CREDITS } from "@/lib/credits";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -236,7 +238,11 @@ function Studio() {
     setPhase("starting");
     try {
       const r = await start({ data: check.data });
-      if (!r.ok) return fail(r.error);
+      void queryClient.invalidateQueries({ queryKey: creditsKey });
+      if (!r.ok) {
+        if ("code" in r && r.code === OUT_OF_CREDITS) openPaywall();
+        return fail(r.error);
+      }
       setPhase("generating");
       void queryClient.invalidateQueries({ queryKey: ["videos"] });
       pollJob(r.id);

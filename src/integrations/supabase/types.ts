@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      user_credits: {
+        Row: {
+          balance: number
+          created_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       videos: {
         Row: {
           aspect_ratio: string
@@ -67,7 +88,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_credits: {
+        Args: { _amount: number; _user_id: string }
+        Returns: number
+      }
+      spend_credits: {
+        Args: { _amount: number; _user_id: string }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never

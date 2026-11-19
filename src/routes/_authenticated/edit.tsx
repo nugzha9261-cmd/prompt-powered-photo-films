@@ -1,3 +1,5 @@
+import { creditsKey, openPaywall } from "@/hooks/use-credits";
+import { OUT_OF_CREDITS } from "@/lib/credits";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -251,7 +253,11 @@ function EditPage() {
               seconds: part.seconds, prompt, aspectRatio: aspectForSize(clip.width, clip.height),
             });
             const job = await begin({ data });
-            if (!job.ok) throw new Error(job.error);
+            void queryClient.invalidateQueries({ queryKey: creditsKey });
+            if (!job.ok) {
+              if ("code" in job && job.code === OUT_OF_CREDITS) openPaywall();
+              throw new Error(job.error);
+            }
             ids.push(job.id);
             setPhase("generating");
             void queryClient.invalidateQueries({ queryKey: ["videos"] });
@@ -301,7 +307,11 @@ function EditPage() {
         return toast.error(check.error.issues[0]?.message ?? "Check your inputs.");
       }
       const r = await begin({ data: check.data });
-      if (!r.ok) return fail(r.error);
+      void queryClient.invalidateQueries({ queryKey: creditsKey });
+      if (!r.ok) {
+        if ("code" in r && r.code === OUT_OF_CREDITS) openPaywall();
+        return fail(r.error);
+      }
       setPhase("generating");
       void queryClient.invalidateQueries({ queryKey: ["videos"] });
       pollJob(r.id);
