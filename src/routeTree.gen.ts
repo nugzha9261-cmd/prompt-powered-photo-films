@@ -16,6 +16,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedDirectorRouteImport } from './routes/_authenticated/director'
 import { Route as AuthenticatedEditRouteImport } from './routes/_authenticated/edit'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
+import { Route as AuthenticatedMovieRouteImport } from './routes/_authenticated/movie'
 import { Route as AuthenticatedStudioRouteImport } from './routes/_authenticated/studio'
 import { Route as ApiDirectorRouteImport } from './routes/api/director'
 import { Route as AuthenticatedDirectorIndexRouteImport } from './routes/_authenticated/director.index'
@@ -55,6 +56,11 @@ const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
   path: '/library',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMovieRoute = AuthenticatedMovieRouteImport.update({
+  id: '/movie',
+  path: '/movie',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedStudioRoute = AuthenticatedStudioRouteImport.update({
   id: '/studio',
   path: '/studio',
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/director': typeof AuthenticatedDirectorRouteWithChildren
   '/edit': typeof AuthenticatedEditRoute
   '/library': typeof AuthenticatedLibraryRoute
+  '/movie': typeof AuthenticatedMovieRoute
   '/studio': typeof AuthenticatedStudioRoute
   '/api/director': typeof ApiDirectorRoute
   '/director/$threadId': typeof AuthenticatedDirectorThreadIdRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/edit': typeof AuthenticatedEditRoute
   '/library': typeof AuthenticatedLibraryRoute
+  '/movie': typeof AuthenticatedMovieRoute
   '/studio': typeof AuthenticatedStudioRoute
   '/api/director': typeof ApiDirectorRoute
   '/director/$threadId': typeof AuthenticatedDirectorThreadIdRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/_authenticated/director': typeof AuthenticatedDirectorRouteWithChildren
   '/_authenticated/edit': typeof AuthenticatedEditRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
+  '/_authenticated/movie': typeof AuthenticatedMovieRoute
   '/_authenticated/studio': typeof AuthenticatedStudioRoute
   '/api/director': typeof ApiDirectorRoute
   '/_authenticated/director/$threadId': typeof AuthenticatedDirectorThreadIdRoute
@@ -124,6 +133,7 @@ export interface FileRouteTypes {
     | '/director'
     | '/edit'
     | '/library'
+    | '/movie'
     | '/studio'
     | '/api/director'
     | '/director/$threadId'
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/edit'
     | '/library'
+    | '/movie'
     | '/studio'
     | '/api/director'
     | '/director/$threadId'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '/_authenticated/director'
     | '/_authenticated/edit'
     | '/_authenticated/library'
+    | '/_authenticated/movie'
     | '/_authenticated/studio'
     | '/api/director'
     | '/_authenticated/director/$threadId'
@@ -213,6 +225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLibraryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/movie': {
+      id: '/_authenticated/movie'
+      path: '/movie'
+      fullPath: '/movie'
+      preLoaderRoute: typeof AuthenticatedMovieRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/studio': {
       id: '/_authenticated/studio'
       path: '/studio'
@@ -263,6 +282,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDirectorRoute: typeof AuthenticatedDirectorRouteWithChildren
   AuthenticatedEditRoute: typeof AuthenticatedEditRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
+  AuthenticatedMovieRoute: typeof AuthenticatedMovieRoute
   AuthenticatedStudioRoute: typeof AuthenticatedStudioRoute
 }
 
@@ -270,6 +290,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDirectorRoute: AuthenticatedDirectorRouteWithChildren,
   AuthenticatedEditRoute: AuthenticatedEditRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
+  AuthenticatedMovieRoute: AuthenticatedMovieRoute,
   AuthenticatedStudioRoute: AuthenticatedStudioRoute,
 }
 

@@ -8,5 +8,5 @@
 - [x] Style templates in Studio
 - [x] Background music on finished videos
 - [x] Daily free video credit
-- [ ] Phase 2: AI voiceover
-- [ ] Phase 3: mini-movies, social export, watermark
+- [x] Phase 2: AI voiceover
+- [x] Phase 3: mini-movies, social export, watermark

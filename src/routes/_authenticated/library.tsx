@@ -43,6 +43,7 @@ const MODE_LABEL: Record<string, string> = {
   storyboard: "Storyboard",
   reference: "Reference",
   edit: "Video edit",
+  movie: "Mini-movie",
 };
 
 async function fetchVideos() {
