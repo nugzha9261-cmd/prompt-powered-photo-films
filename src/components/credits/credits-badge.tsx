@@ -23,7 +23,10 @@ export function CreditsBadge() {
     setClaiming(true);
     const { data: next, error } = await supabase.rpc("claim_daily_credit");
     setClaiming(false);
-    if (error) return toast.error("Couldn't claim your free video. Try again.");
+    if (error) {
+      toast.error("Couldn't claim your free video. Try again.");
+      return;
+    }
     if (next == null) toast.info("Already claimed — come back tomorrow.");
     else toast.success("1 free video added!");
     void queryClient.invalidateQueries({ queryKey: creditsKey });
