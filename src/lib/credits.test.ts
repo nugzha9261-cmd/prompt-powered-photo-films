@@ -20,3 +20,12 @@ describe("credits", () => {
     ]);
   });
 });
+
+import { dailyClaimWait } from "./credits";
+describe("daily free video", () => {
+  const now = Date.parse("2026-11-19T12:00:00Z");
+  it("is available when never claimed", () => expect(dailyClaimWait(null, now)).toBe(0));
+  it("waits 24 hours after a claim", () =>
+    expect(dailyClaimWait("2026-11-19T06:00:00Z", now)).toBe(18 * 3600_000));
+  it("is available again after 24 hours", () => expect(dailyClaimWait("2026-11-18T11:00:00Z", now)).toBe(0));
+});

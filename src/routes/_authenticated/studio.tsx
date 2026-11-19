@@ -11,6 +11,7 @@ import {
   ImageIcon,
   ImagePlus,
   Loader2,
+  Music,
   Plus,
   RotateCcw,
   Sparkles,
@@ -27,6 +28,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { preparePhoto, type Photo } from "@/lib/photo";
 import { cn } from "@/lib/utils";
+import { MUSIC_TRACKS } from "@/lib/music";
+import { STYLE_TEMPLATES } from "@/lib/templates";
 import { downloadVideo, signedUrls } from "@/lib/video-files";
 import { startVideo, syncVideo } from "@/lib/video.functions";
 import {
@@ -120,6 +123,38 @@ function Studio() {
   const [elapsed, setElapsed] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ url: string; path: string } | null>(null);
+
+  const [template, setTemplate] = useState<string | null>(null);
+  const [track, setTrack] = useState<string>(MUSIC_TRACKS[0]!.id);
+  const [scoring, setScoring] = useState(false);
+
+  const downloadWithMusic = async () => {
+    if (!result) return;
+    setScoring(true);
+    try {
+      const t = MUSIC_TRACKS.find((m) => m.id === track)!;
+      const [video, music] = await Promise.all([
+        fetch(result.url).then((r) => r.blob()),
+        fetch(t.src).then((r) => r.blob()),
+      ]);
+      const { createVideoProcessor } = await import("@/lib/video-processing");
+      const processor = await createVideoProcessor();
+      try {
+        const out = await processor.addMusic(video, music, duration);
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(out);
+        a.download = `lumiere-${t.id}.mp4`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+      } finally {
+        processor.close();
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't add music.");
+    } finally {
+      setScoring(false);
+    }
+  };
 
   const pollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cancelled = useRef(false);
@@ -332,9 +367,34 @@ function Studio() {
                 <StepLabel n={3}>What should happen?</StepLabel>
                 <AskDirectorLink />
               </div>
+              <div className="-mx-1 mb-3 flex gap-2 overflow-x-auto px-1 pb-1">
+                {STYLE_TEMPLATES.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    disabled={busy}
+                    aria-pressed={template === t.id}
+                    onClick={() => {
+                      setTemplate(t.id);
+                      setPrompt(t.prompt);
+                      setDuration(t.duration);
+                    }}
+                    className={cn(
+                      "flex w-36 shrink-0 flex-col items-start gap-0.5 rounded-md border p-2.5 text-left transition-colors disabled:opacity-50",
+                      template === t.id ? "border-primary bg-accent" : "border-border bg-card hover:border-primary/60",
+                    )}
+                  >
+                    <span className="text-sm font-medium leading-tight">{t.label}</span>
+                    <span className="text-xs text-muted-foreground">{t.hint}</span>
+                  </button>
+                ))}
+              </div>
               <Textarea
                 value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
+                onChange={(e) => {
+                  setPrompt(e.target.value);
+                  setTemplate(null);
+                }}
                 maxLength={MAX_PROMPT_LENGTH}
                 rows={4}
                 disabled={busy}
@@ -474,6 +534,34 @@ function Studio() {
                 <Link to="/library">See all my films</Link>
               </Button>
               <p className="w-full text-xs text-muted-foreground">Saved to your account.</p>
+              <div className="w-full rounded-md border border-border bg-card p-3">
+                <p className="mb-2 flex items-center gap-2 text-sm font-medium">
+                  <Music className="size-4 text-primary" /> Add background music
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {MUSIC_TRACKS.map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      aria-pressed={track === m.id}
+                      onClick={() => {
+                        setTrack(m.id);
+                        void new Audio(m.src).play().catch(() => {});
+                      }}
+                      className={cn(
+                        "rounded-full border px-3 py-1 text-xs transition-colors",
+                        track === m.id ? "border-primary bg-accent text-foreground" : "border-border text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+                <Button size="sm" className="mt-3" disabled={scoring} onClick={() => void downloadWithMusic()}>
+                  {scoring ? <Loader2 className="animate-spin" /> : <Download />}
+                  {scoring ? "Mixing music…" : "Download with music"}
+                </Button>
+              </div>
             </div>
           )}
         </section>

@@ -15,6 +15,13 @@
       "when": 1795113503275,
       "tag": "0001_user_credits",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795114501893,
+      "tag": "0002_daily_free_credit",
+      "breakpoints": true
     }
   ]
 }

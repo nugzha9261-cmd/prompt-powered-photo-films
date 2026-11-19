@@ -25,3 +25,13 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
 export function canAfford(balance: number | null | undefined, cost: number) {
   return (balance ?? 0) >= cost;
 }
+
+/** Free credits claimable once per day (does not stack across missed days). */
+export const DAILY_FREE_CREDITS = 1;
+export const DAILY_CLAIM_HOURS = 24;
+
+/** Milliseconds until the daily credit can be claimed again (0 = available now). */
+export function dailyClaimWait(lastClaim: string | null | undefined, now = Date.now()) {
+  if (!lastClaim) return 0;
+  return Math.max(0, new Date(lastClaim).getTime() + DAILY_CLAIM_HOURS * 3600_000 - now);
+}

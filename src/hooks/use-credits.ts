@@ -11,9 +11,9 @@ export function useCredits() {
     queryKey: creditsKey,
     enabled: !!session,
     queryFn: async () => {
-      const { data, error } = await supabase.from("user_credits").select("balance").maybeSingle();
+      const { data, error } = await supabase.from("user_credits").select("balance, last_daily_claim").maybeSingle();
       if (error) throw error;
-      return data?.balance ?? 0;
+      return { balance: data?.balance ?? 0, lastClaim: data?.last_daily_claim ?? null };
     },
   });
 }

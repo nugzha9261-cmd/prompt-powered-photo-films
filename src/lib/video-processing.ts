@@ -39,6 +39,18 @@ export async function createVideoProcessor() {
       await exec(["-f", "concat", "-safe", "0", "-i", "list.txt", "-c", "copy", "-movflags", "+faststart", "-y", "joined.mp4"]);
       return read("joined.mp4");
     },
+    /** Mixes a looping music track under the video (keeps original sound when present). */
+    async addMusic(video: Blob, music: Blob, seconds: number) {
+      await ff.writeFile("film.mp4", new Uint8Array(await video.arrayBuffer()));
+      await ff.writeFile("music.mp3", new Uint8Array(await music.arrayBuffer()));
+      const fade = `afade=t=out:st=${Math.max(0, seconds - 1.5)}:d=1.5`;
+      const base = ["-i", "film.mp4", "-stream_loop", "-1", "-i", "music.mp3"];
+      const tail = ["-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-t", String(seconds), "-movflags", "+faststart", "-y", "scored.mp4"];
+      const mixed = await ff.exec([...base, "-filter_complex",
+        `[1:a]volume=0.45[m];[0:a][m]amix=inputs=2:duration=first:dropout_transition=0,${fade}[a]`, ...tail]);
+      if (mixed !== 0) await exec([...base, "-filter_complex", `[1:a]volume=0.8,${fade}[a]`, ...tail]);
+      return read("scored.mp4");
+    },
     close() { ff.terminate(); },
   };
 }

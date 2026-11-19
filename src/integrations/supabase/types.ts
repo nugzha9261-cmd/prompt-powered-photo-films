@@ -18,18 +18,21 @@ export type Database = {
         Row: {
           balance: number
           created_at: string
+          last_daily_claim: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           balance?: number
           created_at?: string
+          last_daily_claim?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           balance?: number
           created_at?: string
+          last_daily_claim?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -92,6 +95,7 @@ export type Database = {
         Args: { _amount: number; _user_id: string }
         Returns: number
       }
+      claim_daily_credit: { Args: never; Returns: number }
       spend_credits: {
         Args: { _amount: number; _user_id: string }
         Returns: number
