@@ -6,12 +6,20 @@ export const CREDITS_PER_EDIT = 1;
 
 export const OUT_OF_CREDITS = "OUT_OF_CREDITS";
 
-export type CreditPack = { id: string; credits: number; label: string; price: string };
-/** Store product ids (RevenueCat / App Store / Google Play). Prices shown are placeholders until store products exist. */
-export const CREDIT_PACKS: CreditPack[] = [
-  { id: "lumiere_credits_10", credits: 10, label: "Starter", price: "$9.99" },
-  { id: "lumiere_credits_30", credits: 30, label: "Creator", price: "$24.99" },
-  { id: "lumiere_credits_70", credits: 70, label: "Director", price: "$49.99" },
+export type SubscriptionPlan = {
+  id: string;
+  label: string;
+  price: string;
+  period: string;
+  /** Videos granted each billing period. */
+  credits: number;
+  badge?: string;
+};
+/** Store subscription product ids (RevenueCat / App Store / Google Play). */
+export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
+  { id: "lumiere_weekly", label: "Weekly", price: "$4.99", period: "week", credits: 12 },
+  { id: "lumiere_monthly", label: "Monthly", price: "$14.99", period: "month", credits: 50, badge: "Most popular" },
+  { id: "lumiere_quarterly", label: "3 Months", price: "$34.99", period: "3 months", credits: 180, badge: "Best value" },
 ];
 
 export function canAfford(balance: number | null | undefined, cost: number) {

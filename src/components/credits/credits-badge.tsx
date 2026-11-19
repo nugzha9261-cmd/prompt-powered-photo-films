@@ -3,7 +3,7 @@ import { Film } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { CREDIT_PACKS } from "@/lib/credits";
+import { SUBSCRIPTION_PLANS } from "@/lib/credits";
 import { isNativeApp } from "@/lib/native";
 import { onPaywall, useCredits } from "@/hooks/use-credits";
 
@@ -26,19 +26,26 @@ export function CreditsBadge() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="font-display text-2xl">Get more credits</DialogTitle>
+            <DialogTitle className="font-display text-2xl">Choose a plan</DialogTitle>
             <DialogDescription>
               You have {balance ?? 0} {balance === 1 ? "credit" : "credits"}. One credit makes one video or one edited section (up to 10 seconds).
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-3">
-            {CREDIT_PACKS.map((p) => (
+            {SUBSCRIPTION_PLANS.map((p) => (
               <div key={p.id} className="flex items-center justify-between rounded-md border border-border p-4">
                 <div>
-                  <p className="font-medium">{p.label}</p>
-                  <p className="text-sm text-muted-foreground">{p.credits} videos</p>
+                  <p className="font-medium">
+                    {p.label}
+                    {p.badge && (
+                      <span className="ml-2 rounded-full bg-primary/15 px-2 py-0.5 text-xs text-primary">{p.badge}</span>
+                    )}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {p.credits} videos per {p.period} · renews automatically
+                  </p>
                 </div>
-                <Button disabled>{p.price}</Button>
+                <Button disabled>{p.price}/{p.period === "3 months" ? "3 mo" : p.period}</Button>
               </div>
             ))}
           </div>
