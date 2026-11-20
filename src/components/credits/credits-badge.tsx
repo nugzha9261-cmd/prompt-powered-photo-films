@@ -84,7 +84,7 @@ export function CreditsBadge() {
           <p className="text-xs text-muted-foreground">
             {isNativeApp()
               ? "In-app purchases are coming soon."
-              : "Purchases will open in the Lumière app for iPhone and Android soon."}
+              : "Purchases will open in the CineFlow AI app for iPhone and Android soon."}
           </p>
         </DialogContent>
       </Dialog>

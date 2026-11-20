@@ -17,9 +17,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_authenticated/director")({
   head: () => ({
     meta: [
-      { title: "AI Director — Lumière" },
+      { title: "AI Director — CineFlow AI" },
       { name: "description", content: "Chat with the AI Director to turn your idea into a ready-to-use video prompt." },
-      { property: "og:title", content: "AI Director — Lumière" },
+      { property: "og:title", content: "AI Director — CineFlow AI" },
       { property: "og:description", content: "Describe your idea in plain words and get a cinematic prompt." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

@@ -8,13 +8,13 @@ import { useAuth } from "@/hooks/use-auth";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Lumière — Turn your photos into AI videos" },
+      { title: "CineFlow AI — Turn your photos into AI videos" },
       {
         name: "description",
         content:
-          "Upload one or more photos, describe the motion, and Lumière makes a short AI video with sound — saved to your account.",
+          "Upload one or more photos, describe the motion, and CineFlow AI makes a short AI video with sound — saved to your account.",
       },
-      { property: "og:title", content: "Lumière — Turn your photos into AI videos" },
+      { property: "og:title", content: "CineFlow AI — Turn your photos into AI videos" },
       {
         property: "og:description",
         content: "Animate a photo, morph from a first to a last scene, or build a storyboard. Every video is saved.",

@@ -1,4 +1,4 @@
-# Lumière for iOS and Android
+# CineFlow AI for iOS and Android
 
 The phone apps are a native shell (Capacitor) around the published website
 (`https://prompt-powered-photo-films.lovable.app`). Any change you publish on the
@@ -14,7 +14,7 @@ a **Mac with Xcode**.
    `git clone <your-repo-url> && cd <repo>`
 2. Install packages: `npm install`
 3. Before the first store upload, open `capacitor.config.ts` and change `appId`
-   to your own id, e.g. `com.yourname.lumiere`. It can't be changed later.
+   to your own id, e.g. `com.nexonelabs.cineflow`. It can't be changed later.
 4. Add the native projects:
    - `npx cap add android`
    - `npx cap add ios` (Mac only)

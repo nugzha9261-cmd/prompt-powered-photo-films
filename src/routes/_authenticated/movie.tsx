@@ -17,9 +17,9 @@ import { signedUrls } from "@/lib/video-files";
 export const Route = createFileRoute("/_authenticated/movie")({
   head: () => ({
     meta: [
-      { title: "Mini-movie maker — Lumière" },
-      { name: "description", content: "Join 2 to 6 of your Lumière films into one mini-movie up to 60 seconds." },
-      { property: "og:title", content: "Mini-movie maker — Lumière" },
+      { title: "Mini-movie maker — CineFlow AI" },
+      { name: "description", content: "Join 2 to 6 of your CineFlow AI films into one mini-movie up to 60 seconds." },
+      { property: "og:title", content: "Mini-movie maker — CineFlow AI" },
       { property: "og:description", content: "Chain your photo videos into one continuous mini-movie." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -178,7 +178,7 @@ function MovieMaker() {
             {result && (
               <>
                 <video src={result.url} controls autoPlay playsInline className="w-full rounded-sm bg-muted" />
-                <FinishPanel videoUrl={result.url} seconds={result.seconds} name="lumiere-movie" />
+                <FinishPanel videoUrl={result.url} seconds={result.seconds} name="cineflow-movie" />
               </>
             )}
           </div>

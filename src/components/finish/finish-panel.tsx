@@ -36,7 +36,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
 }
 
 /** Music, voiceover, social shapes and the free-plan mark for a finished film. */
-export function FinishPanel({ videoUrl, seconds, name = "lumiere" }: { videoUrl: string; seconds: number; name?: string }) {
+export function FinishPanel({ videoUrl, seconds, name = "cineflow" }: { videoUrl: string; seconds: number; name?: string }) {
   const speak = useServerFn(generateVoiceover);
   const [track, setTrack] = useState<string | null>(null);
   const [script, setScript] = useState("");
@@ -104,7 +104,7 @@ export function FinishPanel({ videoUrl, seconds, name = "lumiere" }: { videoUrl:
     const file = new File([ready.blob], filename, { type: "video/mp4" });
     if (matchMedia("(pointer: coarse)").matches && navigator.canShare?.({ files: [file] })) {
       try {
-        await navigator.share({ files: [file], title: "Made with Lumière" });
+        await navigator.share({ files: [file], title: "Made with CineFlow AI" });
         return;
       } catch (e) {
         if ((e as DOMException).name === "AbortError") return;
@@ -179,7 +179,7 @@ export function FinishPanel({ videoUrl, seconds, name = "lumiere" }: { videoUrl:
         </Button>
       )}
       {watermark && (
-        <p className="text-xs text-muted-foreground">Free plan videos include a small "Lumière" mark in the corner. Paid plans remove it.</p>
+        <p className="text-xs text-muted-foreground">Free plan videos include a small "CineFlow AI" mark in the corner. Paid plans remove it.</p>
       )}
     </div>
   );

@@ -8,9 +8,9 @@ import { getThread } from "@/lib/director-threads";
 export const Route = createFileRoute("/_authenticated/director/$threadId")({
   head: () => ({
     meta: [
-      { title: "Chat — AI Director — Lumière" },
+      { title: "Chat — AI Director — CineFlow AI" },
       { name: "description", content: "Your conversation with the AI Director about your next video." },
-      { property: "og:title", content: "AI Director chat — Lumière" },
+      { property: "og:title", content: "AI Director chat — CineFlow AI" },
       { property: "og:description", content: "Work out the perfect prompt for your photo video." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

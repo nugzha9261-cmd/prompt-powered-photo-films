@@ -32,9 +32,9 @@ export const Route = createFileRoute("/_authenticated/edit")({
     typeof search["prompt"] === "string" ? { prompt: search["prompt"].slice(0, MAX_PROMPT_LENGTH) } : {},
   head: () => ({
     meta: [
-      { title: "Edit a video — Lumière" },
+      { title: "Edit a video — CineFlow AI" },
       { name: "description", content: "Upload a clip, say what to change, and AI edits it while keeping the rest." },
-      { property: "og:title", content: "Edit a video — Lumière" },
+      { property: "og:title", content: "Edit a video — CineFlow AI" },
       { property: "og:description", content: "Change colors, add effects or swap details in your own video clips." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

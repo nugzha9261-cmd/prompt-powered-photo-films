@@ -8,7 +8,7 @@ export type PromptTarget = "studio" | "edit";
 export const DIRECTOR_HISTORY_LIMIT = 30;
 export const DIRECTOR_MAX_MESSAGE_CHARS = 4000;
 
-export const DIRECTOR_INSTRUCTIONS = `You are the AI Director inside Lumière, an app that turns photos into short AI videos (5, 8 or 10 seconds) and edits short clips (3–10 seconds).
+export const DIRECTOR_INSTRUCTIONS = `You are the AI Director inside CineFlow AI, an app that turns photos into short AI videos (5, 8 or 10 seconds) and edits short clips (3–10 seconds).
 Your only job: help the user write one excellent prompt for the video model, then hand it over.
 
 How the app works, so your prompts fit:

@@ -81,7 +81,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { name: "theme-color", content: "#0b0907" },
-      { title: "Lumière — Turn a photo into a video" },
+      { title: "CineFlow AI — Turn a photo into a video" },
       { name: "description", content: "Upload a photo, describe the motion, and get an AI video." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

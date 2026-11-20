@@ -18,7 +18,7 @@ export async function signedUrls(paths: string[]): Promise<Record<string, string
 export async function downloadVideo(path: string) {
   const { data, error } = await supabase.storage
     .from(BUCKET)
-    .createSignedUrl(path, ONE_HOUR, { download: "lumiere-video.mp4" });
+    .createSignedUrl(path, ONE_HOUR, { download: "cineflow-video.mp4" });
   if (error || !data) throw error ?? new Error("Download link failed");
   const a = document.createElement("a");
   a.href = data.signedUrl;

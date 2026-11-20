@@ -12,7 +12,7 @@ export function AppHeader() {
     <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 pt-8">
       <Link to="/" className="flex items-center gap-2">
         <span className="size-2.5 rounded-full bg-safelight shadow-[0_0_14px_var(--safelight)]" />
-        <span className="font-display text-2xl tracking-wide">Lumière</span>
+        <span className="font-display text-2xl tracking-wide">CineFlow AI</span>
       </Link>
       <nav className="-mx-2 flex max-w-full items-center gap-0.5 overflow-x-auto whitespace-nowrap text-sm sm:mx-0 sm:gap-1">
         {ready && session ? (

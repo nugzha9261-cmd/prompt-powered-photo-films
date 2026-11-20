@@ -40,7 +40,7 @@ export function movieLengthOk(durations: number[]) {
   return durations.length >= MOVIE_MIN_SCENES && durations.length <= MOVIE_MAX_SCENES && total <= MOVIE_MAX_SECONDS;
 }
 
-/** Free-plan exports carry the "Lumière" corner mark; paid plans export clean. */
+/** Free-plan exports carry the "CineFlow AI" corner mark; paid plans export clean. */
 export function needsWatermark(hasPaidPlan: boolean) {
   return !hasPaidPlan;
 }

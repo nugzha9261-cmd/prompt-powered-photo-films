@@ -17,9 +17,9 @@ export type SubscriptionPlan = {
 };
 /** Store subscription product ids (RevenueCat / App Store / Google Play). */
 export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
-  { id: "lumiere_weekly", label: "Weekly", price: "$4.99", period: "week", credits: 12 },
-  { id: "lumiere_monthly", label: "Monthly", price: "$14.99", period: "month", credits: 50, badge: "Most popular" },
-  { id: "lumiere_quarterly", label: "3 Months", price: "$34.99", period: "3 months", credits: 180, badge: "Best value" },
+  { id: "cineflow_weekly", label: "Weekly", price: "$4.99", period: "week", credits: 12 },
+  { id: "cineflow_monthly", label: "Monthly", price: "$14.99", period: "month", credits: 50, badge: "Most popular" },
+  { id: "cineflow_quarterly", label: "3 Months", price: "$34.99", period: "3 months", credits: 180, badge: "Best value" },
 ];
 
 export function canAfford(balance: number | null | undefined, cost: number) {

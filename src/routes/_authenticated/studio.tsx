@@ -49,9 +49,9 @@ export const Route = createFileRoute("/_authenticated/studio")({
     typeof search["prompt"] === "string" ? { prompt: search["prompt"].slice(0, MAX_PROMPT_LENGTH) } : {},
   head: () => ({
     meta: [
-      { title: "Studio — Lumière" },
+      { title: "Studio — CineFlow AI" },
       { name: "description", content: "Turn one or more photos into an AI video and save it to your account." },
-      { property: "og:title", content: "Studio — Lumière" },
+      { property: "og:title", content: "Studio — CineFlow AI" },
       { property: "og:description", content: "Animate a photo, morph first to last scene, or build a storyboard." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

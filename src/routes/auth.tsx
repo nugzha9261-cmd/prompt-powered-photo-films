@@ -15,9 +15,9 @@ import { isNativeApp } from "@/lib/native";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — Lumière" },
-      { name: "description", content: "Sign in to Lumière to make photo videos and keep them all in your account." },
-      { property: "og:title", content: "Sign in — Lumière" },
+      { title: "Sign in — CineFlow AI" },
+      { name: "description", content: "Sign in to CineFlow AI to make photo videos and keep them all in your account." },
+      { property: "og:title", content: "Sign in — CineFlow AI" },
       { property: "og:description", content: "Your AI photo videos, saved to your own account." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

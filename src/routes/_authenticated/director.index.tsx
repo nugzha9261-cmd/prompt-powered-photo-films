@@ -5,9 +5,9 @@ import { latestOrNewThread } from "@/lib/director-threads";
 export const Route = createFileRoute("/_authenticated/director/")({
   head: () => ({
     meta: [
-      { title: "AI Director — Lumière" },
+      { title: "AI Director — CineFlow AI" },
       { name: "description", content: "Open your latest AI Director chat or start a new one." },
-      { property: "og:title", content: "AI Director — Lumière" },
+      { property: "og:title", content: "AI Director — CineFlow AI" },
       { property: "og:description", content: "Turn your idea into a ready-to-use video prompt." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

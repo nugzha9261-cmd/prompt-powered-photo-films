@@ -26,9 +26,9 @@ import { syncVideo } from "@/lib/video.functions";
 export const Route = createFileRoute("/_authenticated/library")({
   head: () => ({
     meta: [
-      { title: "My films — Lumière" },
-      { name: "description", content: "Every AI video you've made with Lumière, saved to your account." },
-      { property: "og:title", content: "My films — Lumière" },
+      { title: "My films — CineFlow AI" },
+      { name: "description", content: "Every AI video you've made with CineFlow AI, saved to your account." },
+      { property: "og:title", content: "My films — CineFlow AI" },
       { property: "og:description", content: "Watch, download or delete your saved photo videos." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
