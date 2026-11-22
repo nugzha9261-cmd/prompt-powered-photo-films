@@ -1,5 +1,5 @@
 // Set only to the owner's confirmed public support address.
-export const SUPPORT_EMAIL: string | null = null;
+export const SUPPORT_EMAIL: string | null = "studio@nexonelabs.com";
 export const LEGAL_UPDATED = "November 22, 2026";
 
 export function legalHead(title: string, description: string) {

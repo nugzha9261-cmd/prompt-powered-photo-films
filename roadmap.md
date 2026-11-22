@@ -13,7 +13,7 @@
 
 # iPhone submission preparation
 - [x] Public privacy, terms and support pages.
-- [ ] Public support email — blocked: awaiting owner's confirmed contact address.
+- [x] Public support email — studio@nexonelabs.com confirmed by the owner.
 - [x] In-app account deletion with private files and account data removed.
 - [x] Hide unfinished purchases; point mobile shell to the custom domain.
 - [x] Verify deletion and public pages; document remaining store submission steps.
