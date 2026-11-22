@@ -134,7 +134,7 @@ function AuthPage() {
               </>
             )}
 
-            <form onSubmit={submit} className={"mt-8 space-y-4" : "space-y-4"}>
+            <form onSubmit={submit} className="mt-8 space-y-4">
               <div className="space-y-1.5">
                 <Label htmlFor="email">Email</Label>
                 <Input
