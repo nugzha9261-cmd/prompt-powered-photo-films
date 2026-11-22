@@ -62,6 +62,8 @@ After pulling new changes from GitHub, run `npm install && npx cap sync` again.
 - Test on a real iPhone: signup, confirmation email, password recovery, photo and
   video upload, generation, saved library, voiceover, export/share, deletion and
   offline retry. Browser checks do not replace device checks.
+- Password recovery screens exist, but hosted email delivery, redirect allowlists
+  and an actual emailed recovery-link journey must still be verified before submission.
 - Add final app icon, screenshots, age rating, copyright, review contact and a
   working reviewer account with enough credits in App Store Connect. Never store
   reviewer passwords in this repository.
