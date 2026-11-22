@@ -96,6 +96,12 @@ export function deleteThread(id: string) {
   write(read().filter((t) => t.id !== id));
 }
 
+export function clearDirectorThreads() {
+  storage()?.removeItem(KEY);
+  cache = [];
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(EVENT));
+}
+
 export function subscribeThreads(callback: () => void) {
   const onStorage = (e: StorageEvent) => {
     if (e.key === KEY) {

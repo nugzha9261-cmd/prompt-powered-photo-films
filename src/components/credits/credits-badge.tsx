@@ -3,8 +3,6 @@ import { Film } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { SUBSCRIPTION_PLANS } from "@/lib/credits";
-import { isNativeApp } from "@/lib/native";
 import { creditsKey, onPaywall, useCredits } from "@/hooks/use-credits";
 import { supabase } from "@/integrations/supabase/client";
 import { dailyClaimWait } from "@/lib/credits";
@@ -47,7 +45,7 @@ export function CreditsBadge() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="font-display text-2xl">Choose a plan</DialogTitle>
+            <DialogTitle className="font-display text-2xl">Your credits</DialogTitle>
             <DialogDescription>
               You have {balance ?? 0} {balance === 1 ? "credit" : "credits"}. One credit makes one video or one edited section (up to 10 seconds).
             </DialogDescription>
@@ -63,29 +61,6 @@ export function CreditsBadge() {
               {wait > 0 ? "Claimed" : "Claim"}
             </Button>
           </div>
-          <div className="grid gap-3">
-            {SUBSCRIPTION_PLANS.map((p) => (
-              <div key={p.id} className="flex items-center justify-between rounded-md border border-border p-4">
-                <div>
-                  <p className="font-medium">
-                    {p.label}
-                    {p.badge && (
-                      <span className="ml-2 rounded-full bg-primary/15 px-2 py-0.5 text-xs text-primary">{p.badge}</span>
-                    )}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {p.credits} videos per {p.period} · renews automatically
-                  </p>
-                </div>
-                <Button disabled>{p.price}/{p.period === "3 months" ? "3 mo" : p.period}</Button>
-              </div>
-            ))}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            {isNativeApp()
-              ? "In-app purchases are coming soon."
-              : "Purchases will open in the CineFlow AI app for iPhone and Android soon."}
-          </p>
         </DialogContent>
       </Dialog>
     </>

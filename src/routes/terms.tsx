@@ -1,0 +1,18 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { LegalPage } from "@/components/legal-page";
+import { legalHead } from "@/lib/legal";
+
+export const Route = createFileRoute("/terms")({
+  head: () => legalHead("Terms of service", "CineFlow AI terms covering accounts, acceptable media use, AI outputs and credits."),
+  component: TermsPage,
+});
+function TermsPage() {
+  return <LegalPage title="Terms of service">
+    <section><h2>Using CineFlow AI</h2><p>CineFlow AI is provided by NexoneLabs. By creating an account or using the service, you agree to these terms and acknowledge our <Link to="/privacy">privacy policy</Link>. Keep your sign-in details secure. You must be at least 13 and have any parental permission required where you live.</p></section>
+    <section><h2>Your media and permissions</h2><p>You retain your rights in the media you upload. You give us and our service providers the permission needed to process, store and deliver it for your requests. Only upload content you own or are authorized to use, and obtain permission from people whose likeness or voice you use.</p><p>Do not create illegal material, child exploitation content, non-consensual intimate imagery, abusive impersonation, fraud, or content that infringes another person's privacy, copyright or other rights. Do not bypass safety systems or misuse accounts or credits. We may block requests or suspend accounts to protect others and the service.</p></section>
+    <section><h2>AI results</h2><p>AI results may be inaccurate, unexpected, similar to other results, or rejected by safety filters. Exact motion, dialogue, lip synchronization and continuity are not guaranteed. You are responsible for reviewing results and for how you use or share them. We do not guarantee exclusive ownership, copyright protection, or commercial clearance of AI outputs.</p></section>
+    <section><h2>Credits and purchases</h2><p>Credits are used for video generation and edited sections. The app shows your balance and the credits needed before you start. Credits have no cash value and cannot be transferred or redeemed for money. Free rewards may be subject to abuse prevention.</p><p>Paid subscriptions and in-app purchases are not currently available. No recurring subscription is created by using the current app. If purchases are enabled later, prices, renewal terms, allowances and cancellation instructions will be shown before you pay; these terms will be updated. Apple-distributed apps are also subject to <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noreferrer">Apple's Standard End User License Agreement</a>.</p></section>
+    <section><h2>Availability and account deletion</h2><p>Internet access is required. Generation time and availability depend on our providers and safety restrictions. Save important films separately. You can delete films in My films or permanently delete your account from Account. Deletion removes your saved account data and unused credits and cannot be reversed.</p></section>
+    <section><h2>Responsibility and contact</h2><p>The service is provided as available, without guarantees beyond those required by applicable law. To the extent permitted by law, NexoneLabs is not responsible for indirect losses resulting from AI outputs, outages or your use of the service. Nothing here limits rights or liabilities that cannot legally be limited, including mandatory consumer protections.</p><p>For help or concerns, use <Link to="/support">Support</Link>. Material changes to these terms will be reflected by the updated date on this page.</p></section>
+  </LegalPage>;
+}

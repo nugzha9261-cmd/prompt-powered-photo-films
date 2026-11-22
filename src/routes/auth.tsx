@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Loader2, MailCheck } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
@@ -178,6 +178,8 @@ function AuthPage() {
                 {view === "signup" ? "Create account" : view === "forgot" ? "Send reset link" : "Sign in"}
               </Button>
             </form>
+
+            {view === "signup" && <p className="mt-4 text-xs leading-5 text-muted-foreground">By creating an account, you agree to our <Link to="/terms" className="text-primary underline">Terms of service</Link> and acknowledge our <Link to="/privacy" className="text-primary underline">Privacy policy</Link>.</p>}
 
             <p className="mt-6 text-center text-sm text-muted-foreground">
               {view === "signin" ? (

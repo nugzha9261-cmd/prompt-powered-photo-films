@@ -1,7 +1,7 @@
 # CineFlow AI for iOS and Android
 
 The phone apps are a native shell (Capacitor) around the published website
-(`https://prompt-powered-photo-films.lovable.app`). Any change you publish on the
+(`https://cineflow.adsai.studio`). Any change you publish on the
 web shows up in the apps immediately — you only resubmit to the stores when the
 icon, name or native settings change.
 
@@ -13,8 +13,8 @@ a **Mac with Xcode**.
 1. In Lovable, connect the project to GitHub, then clone it:
    `git clone <your-repo-url> && cd <repo>`
 2. Install packages: `npm install`
-3. Before the first store upload, open `capacitor.config.ts` and change `appId`
-   to your own id, e.g. `com.nexonelabs.cineflow`. It can't be changed later.
+3. Register `com.nexonelabs.cineflow` in App Store Connect and Google Play. This
+   bundle identifier is already configured; keep it stable after submission.
 4. Add the native projects:
    - `npx cap add android`
    - `npx cap add ios` (Mac only)
@@ -39,3 +39,32 @@ After pulling new changes from GitHub, run `npm install && npx cap sync` again.
 - Store reviewers need a working test account: create one and put the email and
   password in the review notes.
 - Both stores need a privacy policy link and a support contact.
+
+## Before submitting to Apple
+
+- Publish the latest web changes, then run `npx cap sync` so the shell loads
+  `https://cineflow.adsai.studio`.
+- Privacy URL: `https://cineflow.adsai.studio/privacy`
+- Support URL: `https://cineflow.adsai.studio/support`
+- Terms URL: `https://cineflow.adsai.studio/terms` (Apple Standard EULA is linked).
+- Supply your confirmed public support email before submission and have the
+  legal text reviewed for your business and audience; it is not legal advice.
+- Account deletion is available in Account. Test it with a disposable account,
+  including saved films. Do not use the reviewer or owner account for this test.
+- Subscription offers are hidden until native purchasing is connected. Do not
+  advertise paid plans in store screenshots or metadata yet.
+- Complete App Privacy disclosures using the privacy page as an inventory.
+  Disclose account email, user ID, uploaded user content and applicable usage/
+  diagnostic data; check provider retention and Apple's definitions yourself.
+- Review the generated native project's privacy manifests and required-reason
+  APIs in Xcode, plus any permissions added by plugins. Native projects have not
+  been built or audited in Lovable.
+- Test on a real iPhone: signup, confirmation email, password recovery, photo and
+  video upload, generation, saved library, voiceover, export/share, deletion and
+  offline retry. Browser checks do not replace device checks.
+- Add final app icon, screenshots, age rating, copyright, review contact and a
+  working reviewer account with enough credits in App Store Connect. Never store
+  reviewer passwords in this repository.
+- A remote-web Capacitor shell may face Apple's minimum-functionality review
+  (Guideline 4.2). These web updates do not guarantee approval; validate native
+  usability and substantive app functionality before submitting.

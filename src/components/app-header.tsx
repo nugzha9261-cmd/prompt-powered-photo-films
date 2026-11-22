@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { LogOut } from "lucide-react";
+import { LogOut, UserRound } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -53,6 +53,9 @@ export function AppHeader() {
               My films
             </Link>
             <CreditsBadge />
+            <Button asChild variant="ghost" size="icon-sm" title="Account" aria-label="Account">
+              <Link to="/account"><UserRound /></Link>
+            </Button>
             <Button
               variant="ghost"
               size="sm"

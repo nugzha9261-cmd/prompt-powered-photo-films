@@ -10,3 +10,9 @@
 - [x] Daily free video credit
 - [x] Phase 2: AI voiceover
 - [x] Phase 3: mini-movies, social export, watermark
+
+# iPhone submission preparation
+- [ ] Public privacy, terms and support pages (support contact awaits owner).
+- [ ] In-app account deletion with private files and account data removed.
+- [ ] Hide unfinished purchases; point mobile shell to the custom domain.
+- [ ] Verify deletion and public pages; document remaining store submission steps.

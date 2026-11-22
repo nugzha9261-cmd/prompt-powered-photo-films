@@ -179,7 +179,7 @@ export function FinishPanel({ videoUrl, seconds, name = "cineflow" }: { videoUrl
         </Button>
       )}
       {watermark && (
-        <p className="text-xs text-muted-foreground">Free plan videos include a small "CineFlow AI" mark in the corner. Paid plans remove it.</p>
+          <p className="text-xs text-muted-foreground">Exports include a small "CineFlow AI" mark in the corner.</p>
       )}
     </div>
   );
