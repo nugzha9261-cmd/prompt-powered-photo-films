@@ -33,7 +33,7 @@ After pulling new changes from GitHub, run `npm install && npx cap sync` again.
 ## Good to know
 
 - Sign-in inside the apps is email + password (Google blocks its sign-in page
-  inside apps). Google sign-in still works on the website.
+  inside apps). Google sign-in is currently hidden on the website too.
 - If you sell credits or subscriptions inside the apps, Apple and Google require
   their own in-app purchase systems for digital goods.
 - Store reviewers need a working test account: create one and put the email and
@@ -42,12 +42,14 @@ After pulling new changes from GitHub, run `npm install && npx cap sync` again.
 
 ## Before submitting to Apple
 
+For subscription setup, follow [IN_APP_PURCHASES.md](./IN_APP_PURCHASES.md). Purchasing is not connected yet.
+
 - Publish the latest web changes, then run `npx cap sync` so the shell loads
   `https://cineflow.adsai.studio`.
 - Privacy URL: `https://cineflow.adsai.studio/privacy`
 - Support URL: `https://cineflow.adsai.studio/support`
 - Terms URL: `https://cineflow.adsai.studio/terms` (Apple Standard EULA is linked).
-- Supply your confirmed public support email before submission and have the
+- Public support email: studio@nexonelabs.com. Have the
   legal text reviewed for your business and audience; it is not legal advice.
 - Account deletion is available in Account. Test it with a disposable account,
   including saved films. Do not use the reviewer or owner account for this test.

@@ -4,14 +4,15 @@ import { LogOut, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { CreditsBadge } from "@/components/credits/credits-badge";
+import cineflowIcon from "@/assets/cineflow-icon.png.asset.json";
 
 export function AppHeader() {
   const { session, ready, signOut } = useAuth();
 
   return (
     <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 pt-8">
-      <Link to="/" className="flex items-center gap-2">
-        <span className="size-2.5 rounded-full bg-safelight shadow-[0_0_14px_var(--safelight)]" />
+      <Link to="/" className="flex items-center gap-3" aria-label="CineFlow AI home">
+        <img src={cineflowIcon.url} alt="" width={48} height={48} className="size-12 shrink-0 rounded-md object-contain" />
         <span className="font-display text-2xl tracking-wide">CineFlow AI</span>
       </Link>
       <nav className="-mx-2 flex max-w-full items-center gap-0.5 overflow-x-auto whitespace-nowrap text-sm sm:mx-0 sm:gap-1">
