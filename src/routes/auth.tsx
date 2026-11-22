@@ -117,7 +117,7 @@ function AuthPage() {
               Every video you make is saved to your account, so you can watch or download it any time.
             </p>
 
-            {view !== "forgot" && !nativeApp && (
+            {false && view !== "forgot" && !nativeApp && (
               <>
                 <Button
                   type="button"
@@ -134,7 +134,7 @@ function AuthPage() {
               </>
             )}
 
-            <form onSubmit={submit} className={view === "forgot" || nativeApp ? "mt-8 space-y-4" : "space-y-4"}>
+            <form onSubmit={submit} className={"mt-8 space-y-4" : "space-y-4"}>
               <div className="space-y-1.5">
                 <Label htmlFor="email">Email</Label>
                 <Input
