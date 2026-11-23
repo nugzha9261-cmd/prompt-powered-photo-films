@@ -9,7 +9,8 @@ export function validWebhookAuthorization(actual: string | null, expected: strin
 }
 
 export async function handleRevenueCatWebhook(request: Request, config: { authorization: string; allowSandbox: boolean }) {
-  if (!config.authorization) return new Response("Payment setup incomplete", { status: 503 });
+  // An unconfigured endpoint has no valid caller; reject it as unauthorized,
+  // rather than reporting a server outage for unauthenticated probes.
   if (!validWebhookAuthorization(request.headers.get("authorization"), config.authorization)) {
     return new Response("Unauthorized", { status: 401 });
   }

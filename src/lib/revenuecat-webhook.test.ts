@@ -26,7 +26,10 @@ beforeEach(() => {
 });
 describe("payment webhook boundary", () => {
   it("fails closed when payment setup is missing", async () => {
-    expect((await handleRevenueCatWebhook(request({}), { ...config, authorization: "" })).status).toBe(503);
+    expect((await handleRevenueCatWebhook(request({}), { ...config, authorization: "" })).status).toBe(401);
+    const anonymous = new Request("https://cineflow.adsai.studio/api/public/revenuecat", { method: "POST", body: "{}" });
+    expect((await handleRevenueCatWebhook(anonymous, { ...config, authorization: "" })).status).toBe(401);
+    expect(backend.user).not.toHaveBeenCalled();
     expect(backend.apply).not.toHaveBeenCalled();
   });
   it("rejects absent or incorrect authorization before account access", async () => {
