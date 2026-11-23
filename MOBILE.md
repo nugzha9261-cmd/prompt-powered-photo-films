@@ -42,7 +42,7 @@ After pulling new changes from GitHub, run `npm install && npx cap sync` again.
 
 ## Before submitting to Apple
 
-For subscription setup, follow [IN_APP_PURCHASES.md](./IN_APP_PURCHASES.md). Purchasing is not connected yet.
+For subscription setup, follow [IN_APP_PURCHASES.md](./IN_APP_PURCHASES.md). Apple purchase code is implemented; webhook authorization, RevenueCat configuration and real-device StoreKit testing are required before launch.
 
 - Publish the latest web changes, then run `npx cap sync` so the shell loads
   `https://cineflow.adsai.studio`.
@@ -53,8 +53,9 @@ For subscription setup, follow [IN_APP_PURCHASES.md](./IN_APP_PURCHASES.md). Pur
   legal text reviewed for your business and audience; it is not legal advice.
 - Account deletion is available in Account. Test it with a disposable account,
   including saved films. Do not use the reviewer or owner account for this test.
-- Subscription offers are hidden until native purchasing is connected. Do not
-  advertise paid plans in store screenshots or metadata yet.
+- Install updated dependencies and run `npx cap sync ios` to include the RevenueCat native plugin, then rebuild the app in Xcode. Enable In-App Purchase under Signing & Capabilities. Never add the iOS RevenueCat SDK separately.
+- Subscription offers stay unavailable until webhook authorization is saved. Configure RevenueCat's `default` offering, `premium` entitlement and Keep with original App User ID restore behavior. Verify payment delivery with a dedicated sandbox account before taking screenshots or advertising paid plans.
+- Restore and Manage Subscription are in Your credits in the iPhone app. Deleting a CineFlow account does not cancel Apple billing; cancel separately with Apple.
 - Complete App Privacy disclosures using the privacy page as an inventory.
   Disclose account email, user ID, uploaded user content and applicable usage/
   diagnostic data; check provider retention and Apple's definitions yourself.

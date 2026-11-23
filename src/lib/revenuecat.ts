@@ -1,9 +1,17 @@
 import type { CustomerInfo, MakePurchaseResult, PurchasesPackage } from "@revenuecat/purchases-capacitor";
 import { isNativeApp } from "./native";
 import { subscriptionPlan } from "./subscriptions";
+import { SUBSCRIPTION_PLANS } from "./credits";
 
 // RevenueCat public client key, intentionally safe to ship in the iPhone app.
 export const APPLE_PUBLIC_SDK_KEY = "appl_JnBUAzVTGUsqZtVZSaONpxFRote";
+const STORE_PERIODS: Record<string, string> = { cineflow_weekly: "P1W", cineflow_monthly: "P1M", cineflow_quarterly: "P3M" };
+
+export function validAppleCatalog(products: { identifier: string; subscriptionPeriod: string | null; price: number }[]) {
+  return SUBSCRIPTION_PLANS.every((plan) => products.filter((product) =>
+    product.identifier === plan.id && product.subscriptionPeriod === STORE_PERIODS[plan.id] && product.price > 0,
+  ).length === 1);
+}
 let desiredUser: string | null = null;
 let queue: Promise<unknown> = Promise.resolve();
 
@@ -56,7 +64,9 @@ export function loadApplePackages(userId: string): Promise<PurchasesPackage[]> {
     const offering = offerings.all["default"];
     if (!offering) throw new Error("Subscriptions couldn't load. Please try again later.");
     const packages = offering.availablePackages.filter((pack) => subscriptionPlan(pack.product.identifier));
-    if (packages.length !== 3) throw new Error("Subscriptions couldn't load. Please try again later.");
+    if (packages.length !== 3 || !validAppleCatalog(packages.map((pack) => pack.product))) {
+      throw new Error("Subscriptions couldn't load. Please try again later.");
+    }
     return packages;
   });
 }

@@ -1,6 +1,6 @@
 # CineFlow AI: in-app purchase setup
 
-Purchases are not connected yet. RevenueCat coordinates Apple's and Google's billing; those stores collect payment and pay you through your developer payment agreements. Start with iOS, then add Android to the same RevenueCat project.
+Apple purchase integration is implemented with RevenueCat's Capacitor SDK. Checkout stays unavailable until the webhook authorization is saved. RevenueCat coordinates billing; Apple collects payment and pays you through your developer payment agreement. Real StoreKit purchases still need testing on your Mac/iPhone. Android checkout is not enabled yet.
 
 ## 1. Prepare Apple payments
 
@@ -34,29 +34,47 @@ Official guide: https://www.revenuecat.com/docs/service-credentials/itunesconnec
 3. Create an offering named `default`, with weekly, monthly and three-month packages.
 4. Copy the Apple **public SDK key** from RevenueCat's API keys page. This public key may be shared for app integration; do not share a secret API key.
 
-## 4. Connect purchases to the app (implementation still needed)
+## 4. Activate the Apple integration
 
-The app developer must:
+Already implemented:
 
-- Install RevenueCat's Capacitor SDK and sync the native projects. Do not separately install the iOS RevenueCat SDK.
-- Configure the platform-specific public SDK key once and link purchases to the signed-in CineFlow account's stable user ID, not its email. Handle account switches deliberately.
-- Load localized price and duration from store products rather than hardcoding checkout prices.
-- Provide purchase, Restore Purchases and Manage Subscription controls, plus cancellation/error states.
-- Include renewal terms, privacy policy and terms before purchase.
-- Create an authenticated RevenueCat webhook endpoint; verify its shared authorization secret, deduplicate events, verify products/account identity, and grant credits server-side only for verified initial payments and renewals. A restore must not award credits again. Out-of-order/retried events must be safe.
-- Read entitlement status from a verified source for premium features; never trust the browser to grant credits or premium access.
+- The supplied Apple public SDK key is configured. Purchases use the signed-in CineFlow account UUID, never email or an anonymous purchaser.
+- The `default` offering supplies all three Apple packages and their localized prices/periods. Entitlement identifier must be exactly `premium`.
+- Your credits in the iPhone app provides Subscribe, Restore Purchases and Manage Subscription, plus renewal terms and legal links.
+- Authorized webhook events grant credits atomically, deduplicating both event IDs and store transaction IDs. Restoring never grants credits again.
+- Server-verified subscription status determines watermark-free exports. The browser cannot grant credits or paid access.
 
-Before implementation, decide whether unused subscription credits roll over or expire, and how refunds/revocations and plan changes affect balances. Existing free/test credits must remain distinguishable if paid credits expire. Credits pay for generation requests/edited sections; a long split edit spends multiple credits, so do not advertise an unconditional number of finished films.
+Owner-confirmed policy: unused paid credits carry over on renewal. Refunded customers keep their credits, but premium access ends. Plan changes do not award credits by themselves; the allowance is granted for the new product's actual paid transaction. Keep all Apple plans in one subscription group. Do not enable free trials or Family Sharing unless their credit policies are separately reviewed; trial/shared events do not award paid credits.
+
+### Set up automatic credit delivery
+
+1. Publish the latest version so the endpoint below exists.
+2. In RevenueCat → Integrations → Webhooks → Add new configuration, name it `CineFlow Apple credits`.
+3. Use URL: `https://cineflow.adsai.studio/api/public/revenuecat`.
+4. In the app owner's secure form for `REVENUECAT_WEBHOOK_AUTH`, use Generate, copy the generated value into RevenueCat's **Authorization header** field exactly, and save it in both places. Do not add `Bearer` unless it is also part of the saved value. Never put this value in chat or code.
+5. Limit the configuration to **CineFlow AI (App Store)** and send all subscription lifecycle events. Production events are accepted by default. Sandbox events are ignored unless the server setting below is enabled.
+6. Set RevenueCat's restore/transfer behavior to **Keep with original App User ID**. Purchases remain attached to the original CineFlow account; sign in to that account to restore. Automatic transfers between accounts are deliberately not supported.
+7. Save and send RevenueCat's test webhook. Confirm a 200 response. A test event does not award credits.
+8. Publish after saving the authorization so the published app receives the setting. Verify the test again against the published endpoint before allowing purchases.
+
+RevenueCat webhook access requires its current Pro plan; review its current pricing. Newer RevenueCat accounts generally use that pricing model, but confirm your account has Webhooks access.
+
+### Sandbox / TestFlight
+
+Sandbox processing is off by default to protect live balances. For controlled testing, enable the server configuration `REVENUECAT_ALLOW_SANDBOX` with the fixed value `true`, publish, and send sandbox events to the same endpoint. Use dedicated test accounts: sandbox awards will affect their real CineFlow credit balance. Disable this setting before public launch, publish again, and set the RevenueCat webhook to Production. Do not use an owner/customer account for accelerated sandbox renewals.
+
+Credit confirmation may take time after Apple completes payment. The app waits for a verified payment receipt and refreshes the actual account balance; if delayed, do not purchase again. Reopening the app reads the saved balance/subscription status even if the original purchase screen was closed.
 
 SDK guide: https://www.revenuecat.com/docs/getting-started/installation/capacitor
 
 ## 5. Test on iPhone
 
-1. Enable the In-App Purchase capability in Xcode; build and upload to TestFlight.
-2. Configure Apple's sandbox testers as needed. TestFlight purchases use Apple's test environment, not real charges.
-3. Test each plan, accelerated renewal, cancellation, restore, reinstall, account switching, duplicate webhook events, failed payments, refunds and credit spending.
-4. Confirm paid credits appear in the signed-in account, not just in a success message.
-5. Submit the first subscriptions with the app version and provide review screenshots and a working reviewer account.
+1. Update your Mac's project from GitHub, run `npm install`, `npx cap sync ios`, then `npx cap open ios`. The new native purchase plugin requires a new app build, not only a web publish. Do not add the RevenueCat iOS SDK separately.
+2. In Xcode choose the app target → Signing & Capabilities → + Capability → In-App Purchase. Check Swift version is at least 5.0. Run and upload to TestFlight.
+3. Configure Apple's sandbox testers as needed and enable the controlled sandbox handling above. TestFlight purchases use Apple's test environment, not real charges. Local Xcode StoreKit configuration files do not necessarily send real RevenueCat webhooks; use sandbox/TestFlight for delivery verification.
+4. Test each plan, accelerated renewal, cancellation, restore, reinstall, account switching, duplicate webhook events, failed payments, refunds and credit spending. Confirm the wrong CineFlow account cannot take another account's Apple subscription.
+5. Confirm exactly 12/50/180 paid-period credits appear in the signed-in account, not just in a success message. Restore must not increase the balance. Refund must retain credits and remove premium access.
+6. Submit the first subscriptions with the app version and provide review screenshots and a working reviewer account. Deleting a CineFlow account does not cancel its Apple subscription.
 
 ## 6. Add Android
 
@@ -71,4 +89,4 @@ Google guide: https://www.revenuecat.com/docs/service-credentials/creating-play-
 
 ## Ready to hand over
 
-Provide the Apple public SDK key, Google public SDK key when Android is ready, exact product identifiers and confirmation that the offering is configured. The developer will request webhook authorization through a secure form after the endpoint exists. No Apple private key, Google credential JSON, or RevenueCat secret API key should be pasted into chat.
+Apple public SDK key is already supplied and implemented. Finish webhook authorization and the native test checklist above. Android still needs its public SDK key and store product/base-plan mapping before checkout can be enabled. No Apple private key, Google credential JSON, or RevenueCat secret API key should be pasted into chat.

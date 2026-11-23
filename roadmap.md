@@ -1,10 +1,13 @@
 # Longer video edits
 - [x] Accept and validate clips up to 30 seconds.
 - [x] Split into supported clips, edit sequentially, join and save to account.
-- [x] Verify limits, media processing, and authenticated editing flow (real 12-second edit saved and read back in My films; 30-second section planning tested).- [x] User credit system (2 free on signup, block at 0, paywall window)
-- [ ] Apple RevenueCat purchases: native plans, restore/manage, verified credit delivery and premium access.
-- [ ] Paid credits carry over on renewal and remain after refunds; refunds end premium access.
-- [ ] Verify webhook security/deduplication and signed-in UI; native StoreKit testing requires the owner's iPhone.
+- [x] Verify limits, media processing, and authenticated editing flow (real 12-second edit saved and read back in My films; 30-second section planning tested).
+- [x] User credit system (2 free on signup, block at 0, paywall window)
+- [x] Apple RevenueCat purchase implementation: native plans, restore/manage, verified credit delivery and premium access.
+- [x] Paid credits carry over on renewal and remain after refunds; refunds end premium access.
+- [x] Verify webhook authorization/deduplication, database grants, account ownership and saved test-payment readback through signed-in UI; 50 focused tests passed.
+- [ ] Apple payment activation — blocked: owner's publication approval, secure webhook authorization and RevenueCat offering/entitlement/restore configuration.
+- [ ] Native StoreKit purchase/renewal/restore verification — blocked: owner's updated iPhone build, controlled sandbox configuration and Apple sandbox/TestFlight testing.
 - [ ] Android purchases — blocked: Google Play public SDK key and store catalog configuration.
 
 # Phase 1 growth
