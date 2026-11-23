@@ -14,6 +14,94 @@ export type Database = {
   }
   public: {
     Tables: {
+      store_events: {
+        Row: {
+          event_id: string
+          received_at: string
+        }
+        Insert: {
+          event_id: string
+          received_at?: string
+        }
+        Update: {
+          event_id?: string
+          received_at?: string
+        }
+        Relationships: []
+      }
+      store_payments: {
+        Row: {
+          credits: number
+          environment: string
+          original_transaction_id: string
+          product_id: string
+          transaction_id: string
+          user_id: string | null
+        }
+        Insert: {
+          credits: number
+          environment: string
+          original_transaction_id: string
+          product_id: string
+          transaction_id: string
+          user_id?: string | null
+        }
+        Update: {
+          credits?: number
+          environment?: string
+          original_transaction_id?: string
+          product_id?: string
+          transaction_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_payments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_credits"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      store_subscriptions: {
+        Row: {
+          environment: string
+          expires_at: string
+          last_event_ms: number
+          original_transaction_id: string
+          product_id: string
+          revoked: boolean
+          user_id: string
+        }
+        Insert: {
+          environment: string
+          expires_at: string
+          last_event_ms?: number
+          original_transaction_id: string
+          product_id: string
+          revoked?: boolean
+          user_id: string
+        }
+        Update: {
+          environment?: string
+          expires_at?: string
+          last_event_ms?: number
+          original_transaction_id?: string
+          product_id?: string
+          revoked?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_credits"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       user_credits: {
         Row: {
           balance: number
@@ -94,6 +182,21 @@ export type Database = {
       add_credits: {
         Args: { _amount: number; _user_id: string }
         Returns: number
+      }
+      apply_store_event: {
+        Args: {
+          _environment: string
+          _event_id: string
+          _event_ms: number
+          _expires_at: string
+          _original_transaction_id: string
+          _paid: boolean
+          _product_id: string
+          _revoked: boolean
+          _transaction_id: string
+          _user_id: string
+        }
+        Returns: string
       }
       claim_daily_credit: { Args: never; Returns: number }
       spend_credits: {

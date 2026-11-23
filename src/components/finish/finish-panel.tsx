@@ -9,8 +9,7 @@ import { EXPORT_FORMATS, MAX_VOICE_CHARS, VOICES, needsWatermark, type ExportFor
 import { generateVoiceover } from "@/lib/finishing.functions";
 import { MUSIC_TRACKS } from "@/lib/music";
 import { cn } from "@/lib/utils";
-
-const HAS_PAID_PLAN = false; // Becomes true once store subscriptions are connected.
+import { useSubscription } from "@/hooks/use-subscription";
 
 function b64ToBlob(b64: string, type: string) {
   const bin = atob(b64);
@@ -37,6 +36,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
 
 /** Music, voiceover, social shapes and the free-plan mark for a finished film. */
 export function FinishPanel({ videoUrl, seconds, name = "cineflow" }: { videoUrl: string; seconds: number; name?: string }) {
+  const subscription = useSubscription();
   const speak = useServerFn(generateVoiceover);
   const [track, setTrack] = useState<string | null>(null);
   const [script, setScript] = useState("");
@@ -46,7 +46,7 @@ export function FinishPanel({ videoUrl, seconds, name = "cineflow" }: { videoUrl
   const [format, setFormat] = useState<ExportFormat>("original");
   const [working, setWorking] = useState(false);
   const [ready, setReady] = useState<{ blob: Blob; url: string } | null>(null);
-  const watermark = needsWatermark(HAS_PAID_PLAN);
+  const watermark = needsWatermark(subscription.data?.premium ?? false);
   const voiceKey = `${voice}|${script.trim()}`;
 
   const makeVoice = async () => {
@@ -70,11 +70,13 @@ export function FinishPanel({ videoUrl, seconds, name = "cineflow" }: { videoUrl
     setWorking(true);
     setReady(null);
     try {
+      const verified = await subscription.refetch();
+      const includeWatermark = needsWatermark(verified.data?.premium ?? false);
       const t = MUSIC_TRACKS.find((m) => m.id === track);
       const [video, music, mark] = await Promise.all([
         fetch(videoUrl).then((r) => r.blob()),
         t ? fetch(t.src).then((r) => r.blob()) : undefined,
-        watermark ? fetch("/watermark.png").then((r) => r.blob()) : undefined,
+        includeWatermark ? fetch("/watermark.png").then((r) => r.blob()) : undefined,
       ]);
       const size = EXPORT_FORMATS[format];
       const { createVideoProcessor } = await import("@/lib/video-processing");

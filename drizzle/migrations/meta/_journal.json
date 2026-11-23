@@ -22,6 +22,20 @@
       "when": 1795114501893,
       "tag": "0002_daily_free_credit",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795410571009,
+      "tag": "0003_revenuecat_subscriptions",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1795410816613,
+      "tag": "0004_harden_subscription_delivery",
+      "breakpoints": true
     }
   ]
 }

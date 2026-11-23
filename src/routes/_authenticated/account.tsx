@@ -59,13 +59,14 @@ function AccountPage() {
       </section>
       <section className="py-8">
         <h2 className="font-display text-2xl">Delete account</h2>
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">Permanently remove your account, saved films, preview images and unused credits. This cannot be undone. Download any films you want to keep first.</p>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">Permanently remove your account, saved films, preview images and unused credits. This cannot be undone. Download any films you want to keep first. Deleting your account does not cancel your Apple subscription; cancel it in your Apple account settings first.</p>
+        <Button asChild variant="link" className="mt-2 px-0"><a href="https://apps.apple.com/account/subscriptions" target="_blank" rel="noreferrer">Manage Apple subscriptions</a></Button>
         <Button className="mt-5" variant="destructive" onClick={() => setOpen(true)}><Trash2 />Delete account</Button>
       </section>
     </main>
     <Dialog open={open} onOpenChange={(next) => { if (!busy) { setOpen(next); setConfirmation(""); setError(null); } }}>
       <DialogContent className="max-h-[90dvh] overflow-y-auto">
-        <DialogHeader><DialogTitle>Delete your account permanently?</DialogTitle><DialogDescription>Your saved films, previews, credits and sign-in account will be removed. All AI Director chats saved in this browser will also be cleared. Other devices and downloaded files are not erased.</DialogDescription></DialogHeader>
+        <DialogHeader><DialogTitle>Delete your account permanently?</DialogTitle><DialogDescription>Your saved films, previews, credits and sign-in account will be removed. All AI Director chats saved in this browser will also be cleared. Other devices and downloaded files are not erased. An Apple subscription must be canceled separately with Apple.</DialogDescription></DialogHeader>
         <div className="space-y-2"><Label htmlFor="delete-confirmation">Type DELETE to confirm</Label><Input id="delete-confirmation" autoComplete="off" value={confirmation} onChange={(e) => setConfirmation(e.target.value)} disabled={busy} /></div>
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
         <div className="flex flex-wrap justify-end gap-3">

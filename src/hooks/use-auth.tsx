@@ -4,6 +4,7 @@ import { useNavigate, useRouter } from "@tanstack/react-router";
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
+import { setPurchaseUser } from "@/lib/revenuecat";
 
 const AFTER_AUTH_KEY = "lumiere:after-auth";
 
@@ -29,10 +30,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     void supabase.auth.getSession().then(({ data }) => {
+      void setPurchaseUser(data.session?.user.id ?? null).catch(() => {});
       setSession(data.session);
       setReady(true);
     });
     const { data: sub } = supabase.auth.onAuthStateChange((event, next) => {
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "INITIAL_SESSION") {
+        void setPurchaseUser(next?.user.id ?? null).catch(() => {});
+      }
       setSession(next);
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       // Defer: calling auth methods (route guards, queries) inside this callback deadlocks the auth client.
@@ -51,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [router, navigate, queryClient]);
 
   const signOut = useCallback(async () => {
+    await setPurchaseUser(null).catch(() => {});
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();

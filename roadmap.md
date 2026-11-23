@@ -2,7 +2,10 @@
 - [x] Accept and validate clips up to 30 seconds.
 - [x] Split into supported clips, edit sequentially, join and save to account.
 - [x] Verify limits, media processing, and authenticated editing flow (real 12-second edit saved and read back in My films; 30-second section planning tested).- [x] User credit system (2 free on signup, block at 0, paywall window)
-- [ ] RevenueCat in-app purchases — blocked: needs App Store / Google Play products and RevenueCat API keys
+- [ ] Apple RevenueCat purchases: native plans, restore/manage, verified credit delivery and premium access.
+- [ ] Paid credits carry over on renewal and remain after refunds; refunds end premium access.
+- [ ] Verify webhook security/deduplication and signed-in UI; native StoreKit testing requires the owner's iPhone.
+- [ ] Android purchases — blocked: Google Play public SDK key and store catalog configuration.
 
 # Phase 1 growth
 - [x] Style templates in Studio

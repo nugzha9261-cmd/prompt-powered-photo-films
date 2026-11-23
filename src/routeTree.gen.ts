@@ -25,6 +25,7 @@ import { Route as AuthenticatedStudioRouteImport } from './routes/_authenticated
 import { Route as ApiDirectorRouteImport } from './routes/api/director'
 import { Route as AuthenticatedDirectorIndexRouteImport } from './routes/_authenticated/director.index'
 import { Route as AuthenticatedDirectorThreadIdRouteImport } from './routes/_authenticated/director.$threadId'
+import { Route as ApiPublicRevenuecatRouteImport } from './routes/api/public/revenuecat'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -107,6 +108,11 @@ const AuthenticatedDirectorThreadIdRoute =
     path: '/$threadId',
     getParentRoute: () => AuthenticatedDirectorRoute,
   } as any)
+const ApiPublicRevenuecatRoute = ApiPublicRevenuecatRouteImport.update({
+  id: '/api/public/revenuecat',
+  path: '/api/public/revenuecat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/studio': typeof AuthenticatedStudioRoute
   '/api/director': typeof ApiDirectorRoute
   '/director/$threadId': typeof AuthenticatedDirectorThreadIdRoute
+  '/api/public/revenuecat': typeof ApiPublicRevenuecatRoute
   '/director/': typeof AuthenticatedDirectorIndexRoute
 }
 export interface FileRoutesByTo {
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/studio': typeof AuthenticatedStudioRoute
   '/api/director': typeof ApiDirectorRoute
   '/director/$threadId': typeof AuthenticatedDirectorThreadIdRoute
+  '/api/public/revenuecat': typeof ApiPublicRevenuecatRoute
   '/director': typeof AuthenticatedDirectorIndexRoute
 }
 export interface FileRoutesById {
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/_authenticated/studio': typeof AuthenticatedStudioRoute
   '/api/director': typeof ApiDirectorRoute
   '/_authenticated/director/$threadId': typeof AuthenticatedDirectorThreadIdRoute
+  '/api/public/revenuecat': typeof ApiPublicRevenuecatRoute
   '/_authenticated/director/': typeof AuthenticatedDirectorIndexRoute
 }
 export interface FileRouteTypes {
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/api/director'
     | '/director/$threadId'
+    | '/api/public/revenuecat'
     | '/director/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/studio'
     | '/api/director'
     | '/director/$threadId'
+    | '/api/public/revenuecat'
     | '/director'
   id:
     | '__root__'
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
     | '/_authenticated/studio'
     | '/api/director'
     | '/_authenticated/director/$threadId'
+    | '/api/public/revenuecat'
     | '/_authenticated/director/'
   fileRoutesById: FileRoutesById
 }
@@ -223,6 +235,7 @@ export interface RootRouteChildren {
   SupportRoute: typeof SupportRoute
   TermsRoute: typeof TermsRoute
   ApiDirectorRoute: typeof ApiDirectorRoute
+  ApiPublicRevenuecatRoute: typeof ApiPublicRevenuecatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -339,6 +352,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDirectorThreadIdRouteImport
       parentRoute: typeof AuthenticatedDirectorRoute
     }
+    '/api/public/revenuecat': {
+      id: '/api/public/revenuecat'
+      path: '/api/public/revenuecat'
+      fullPath: '/api/public/revenuecat'
+      preLoaderRoute: typeof ApiPublicRevenuecatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -387,6 +407,7 @@ const rootRouteChildren: RootRouteChildren = {
   SupportRoute: SupportRoute,
   TermsRoute: TermsRoute,
   ApiDirectorRoute: ApiDirectorRoute,
+  ApiPublicRevenuecatRoute: ApiPublicRevenuecatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -9,6 +9,9 @@ import { dailyClaimWait } from "@/lib/credits";
 import { useQueryClient } from "@tanstack/react-query";
 import { Gift } from "lucide-react";
 import { toast } from "sonner";
+import { AppleSubscriptions } from "./apple-subscriptions";
+import { supportsApplePurchases } from "@/lib/revenuecat";
+import { useSubscription } from "@/hooks/use-subscription";
 
 export function CreditsBadge() {
   const { data } = useCredits();
@@ -17,6 +20,9 @@ export function CreditsBadge() {
   const queryClient = useQueryClient();
   const [claiming, setClaiming] = useState(false);
   const [open, setOpen] = useState(false);
+  const [apple, setApple] = useState(false);
+  const subscription = useSubscription();
+  useEffect(() => { setApple(supportsApplePurchases()); }, []);
   const claim = async () => {
     setClaiming(true);
     const { data: next, error } = await supabase.rpc("claim_daily_credit");
@@ -33,17 +39,19 @@ export function CreditsBadge() {
 
   return (
     <>
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="sm"
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 rounded-full border border-primary/40 px-2.5 py-1 text-xs text-primary transition-colors hover:bg-primary/10"
+        className="h-auto gap-1.5 rounded-full border border-primary/40 px-2.5 py-1 text-xs text-primary hover:bg-primary/10"
         aria-label="Your credits"
       >
         {data && wait === 0 ? <Gift className="size-3.5 animate-pulse" /> : <Film className="size-3.5" />}
         {balance ?? "–"} <span className="hidden sm:inline">{balance === 1 ? "credit" : "credits"}</span>
-      </button>
+      </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[90dvh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-display text-2xl">Your credits</DialogTitle>
             <DialogDescription>
@@ -61,6 +69,7 @@ export function CreditsBadge() {
               {wait > 0 ? "Claimed" : "Claim"}
             </Button>
           </div>
+          {apple ? <AppleSubscriptions /> : subscription.data?.premium ? <p className="text-sm text-primary">CineFlow Premium active · clean exports</p> : null}
         </DialogContent>
       </Dialog>
     </>

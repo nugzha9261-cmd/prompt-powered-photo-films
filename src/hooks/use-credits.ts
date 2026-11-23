@@ -8,7 +8,7 @@ const PAYWALL_EVENT = "lumiere:paywall";
 export function useCredits() {
   const { session } = useAuth();
   return useQuery({
-    queryKey: creditsKey,
+    queryKey: [...creditsKey, session?.user.id],
     enabled: !!session,
     queryFn: async () => {
       const { data, error } = await supabase.from("user_credits").select("balance, last_daily_claim").maybeSingle();
