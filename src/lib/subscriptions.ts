@@ -13,7 +13,8 @@ const timestamp = z.number().int().min(0).max(8_640_000_000_000_000);
 export const revenueCatEventSchema = z.object({
   api_version: z.literal("1.0"),
   event: z.object({
-    id: z.string().min(1).max(200),
+    // RevenueCat's dashboard TEST event omits the id; real events always carry one.
+    id: z.string().min(1).max(200).optional(),
     type: z.string().min(1).max(80),
     app_id: z.string().min(1).max(200).optional(),
     app_user_id: z.string().min(1).max(200).optional(),
@@ -41,7 +42,7 @@ export type VerifiedSubscriptionEvent = {
 
 /** Only trusted, supported Apple subscription events reach the database RPC. */
 export function subscriptionEvent(event: RevenueCatEvent, allowSandbox = false): VerifiedSubscriptionEvent | null {
-  if (event.store !== "APP_STORE" || !event.environment) return null;
+  if (!event.id || event.store !== "APP_STORE" || !event.environment) return null;
   if (event.environment === "SANDBOX" && !allowSandbox) return null;
   const plan = subscriptionPlan(event.product_id ?? "");
   if (!plan || !event.entitlement_ids?.includes(PREMIUM_ENTITLEMENT)) return null;

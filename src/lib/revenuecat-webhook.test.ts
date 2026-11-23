@@ -44,7 +44,8 @@ describe("payment webhook boundary", () => {
     expect(backend.apply).not.toHaveBeenCalled();
   });
   it("accepts the provider test without granting credits", async () => {
-    expect((await handleRevenueCatWebhook(request({ api_version: "1.0", event: { id: "test", type: "TEST" } }), config)).status).toBe(200);
+    // RevenueCat's dashboard test event omits the event id entirely.
+    expect((await handleRevenueCatWebhook(request({ api_version: "1.0", event: { type: "TEST" } }), config)).status).toBe(200);
     expect(backend.apply).not.toHaveBeenCalled();
   });
   it("only applies verified account payments atomically", async () => {
