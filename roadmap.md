@@ -6,7 +6,7 @@
 - [x] Apple RevenueCat purchase implementation: native plans, restore/manage, verified credit delivery and premium access.
 - [x] Paid credits carry over on renewal and remain after refunds; refunds end premium access.
 - [x] Verify webhook authorization/deduplication, database grants, account ownership and saved test-payment readback through signed-in UI; 50 focused tests passed.
-- [ ] Publish Apple purchase changes — owner approved publication.
+- [ ] Confirm published Apple purchase changes — publication requested; payment endpoint still returned 404 on the first deployment check.
 - [ ] Apple payment activation — blocked: secure webhook authorization and RevenueCat offering/entitlement/restore configuration.
 - [ ] Native StoreKit purchase/renewal/restore verification — blocked: owner's updated iPhone build, controlled sandbox configuration and Apple sandbox/TestFlight testing.
 - [ ] Android purchases — blocked: Google Play public SDK key and store catalog configuration.
