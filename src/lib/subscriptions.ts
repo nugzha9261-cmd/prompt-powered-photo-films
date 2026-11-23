@@ -10,6 +10,11 @@ export function subscriptionPlan(productId: string) {
 }
 
 const timestamp = z.number().int().min(0).max(8_640_000_000_000_000);
+// Connectivity tests have no payment data; ignore unrelated placeholder fields.
+export const revenueCatTestSchema = z.object({
+  api_version: z.literal("1.0"),
+  event: z.object({ type: z.literal("TEST") }),
+});
 export const revenueCatEventSchema = z.object({
   api_version: z.literal("1.0"),
   event: z.object({

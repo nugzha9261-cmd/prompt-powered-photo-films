@@ -1,5 +1,5 @@
 import { timingSafeEqual } from "node:crypto";
-import { revenueCatEventSchema, subscriptionEvent } from "./subscriptions";
+import { revenueCatEventSchema, revenueCatTestSchema, subscriptionEvent } from "./subscriptions";
 
 export function validWebhookAuthorization(actual: string | null, expected: string) {
   if (!actual || !expected) return false;
@@ -19,9 +19,11 @@ export async function handleRevenueCatWebhook(request: Request, config: { author
   if (body.length > 65_536) return new Response("Request too large", { status: 413 });
   let input: unknown;
   try { input = JSON.parse(body); } catch { return new Response("Invalid JSON", { status: 400 }); }
+  // Authenticated TEST events never access accounts or grant credits, even if
+  // their unused purchase fields contain null dashboard placeholders.
+  if (revenueCatTestSchema.safeParse(input).success) return Response.json({ received: true });
   const parsed = revenueCatEventSchema.safeParse(input);
   if (!parsed.success) return new Response("Invalid event", { status: 400 });
-  if (parsed.data.event.type === "TEST") return Response.json({ received: true });
   const event = subscriptionEvent(parsed.data.event, config.allowSandbox);
   if (!event) return Response.json({ received: true, ignored: true });
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

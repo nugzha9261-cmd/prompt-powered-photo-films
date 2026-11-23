@@ -48,6 +48,23 @@ describe("payment webhook boundary", () => {
     expect((await handleRevenueCatWebhook(request({ api_version: "1.0", event: { type: "TEST" } }), config)).status).toBe(200);
     expect(backend.apply).not.toHaveBeenCalled();
   });
+  it("accepts authenticated TEST events with unused null purchase placeholders", async () => {
+    const response = await handleRevenueCatWebhook(request({ api_version: "1.0", event: {
+      type: "TEST", id: null, app_id: null, app_user_id: null, product_id: null,
+      store: null, environment: null, transaction_id: null, original_transaction_id: null,
+      purchased_at_ms: null, event_timestamp_ms: null, period_type: null,
+    } }), config);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ received: true });
+    expect(backend.user).not.toHaveBeenCalled();
+    expect(backend.apply).not.toHaveBeenCalled();
+  });
+  it("does not let TEST events bypass authorization or accept malformed purchases", async () => {
+    expect((await handleRevenueCatWebhook(request({ api_version: "1.0", event: { type: "TEST" } }, "incorrect"), config)).status).toBe(401);
+    expect((await handleRevenueCatWebhook(request({ api_version: "1.0", event: { ...event, transaction_id: null } }), config)).status).toBe(400);
+    expect(backend.user).not.toHaveBeenCalled();
+    expect(backend.apply).not.toHaveBeenCalled();
+  });
   it("only applies verified account payments atomically", async () => {
     expect((await handleRevenueCatWebhook(request({ api_version: "1.0", event }), config)).status).toBe(200);
     expect(backend.user).toHaveBeenCalledWith(event.app_user_id);
