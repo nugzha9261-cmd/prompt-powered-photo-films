@@ -12,6 +12,10 @@ export function validAppleCatalog(products: { identifier: string; subscriptionPe
     product.identifier === plan.id && product.subscriptionPeriod === STORE_PERIODS[plan.id] && product.price > 0,
   ).length === 1);
 }
+function withTimeout<T>(task: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([task, new Promise<T>((_, reject) => setTimeout(
+    () => reject(new Error("Apple is taking too long to respond. Check your connection and tap Retry.")), ms))]);
+}
 let desiredUser: string | null = null;
 let queue: Promise<unknown> = Promise.resolve();
 
@@ -60,8 +64,8 @@ export function setPurchaseUser(userId: string | null) {
 export function loadApplePackages(userId: string): Promise<PurchasesPackage[]> {
   return serialized(async () => {
     const sdk = await sdkForUser(userId);
-    const offerings = await sdk.getOfferings();
-    const offering = offerings.all["default"];
+    const offerings = await withTimeout(sdk.getOfferings(), 15_000);
+    const offering = offerings.all["default"] ?? offerings.current;
     if (!offering) throw new Error("Subscriptions couldn't load. Please try again later.");
     const packages = offering.availablePackages.filter((pack) => subscriptionPlan(pack.product.identifier));
     if (packages.length !== 3 || !validAppleCatalog(packages.map((pack) => pack.product))) {

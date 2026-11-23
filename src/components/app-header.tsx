@@ -10,12 +10,12 @@ export function AppHeader() {
   const { session, ready, signOut } = useAuth();
 
   return (
-    <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 pt-8">
-      <Link to="/" className="flex items-center gap-3" aria-label="CineFlow AI home">
+    <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 pt-4 sm:gap-4 sm:px-6 sm:pt-8">
+      <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="CineFlow AI home">
         <img src={cineflowIcon.url} alt="" width={48} height={48} className="size-12 shrink-0 rounded-md object-contain" />
         <span className="font-display text-2xl tracking-wide">CineFlow AI</span>
       </Link>
-      <nav className="-mx-2 flex max-w-full items-center gap-0.5 overflow-x-auto whitespace-nowrap text-sm sm:mx-0 sm:gap-1">
+      <nav className="flex w-full min-w-0 items-center gap-0.5 overflow-x-auto overscroll-x-contain whitespace-nowrap text-sm [scrollbar-width:none] sm:w-auto sm:gap-1">
         {ready && session ? (
           <>
             <Link
