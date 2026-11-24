@@ -19,6 +19,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedDirectorRouteImport } from './routes/_authenticated/director'
 import { Route as AuthenticatedEditRouteImport } from './routes/_authenticated/edit'
+import { Route as AuthenticatedImagesRouteImport } from './routes/_authenticated/images'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 import { Route as AuthenticatedMovieRouteImport } from './routes/_authenticated/movie'
 import { Route as AuthenticatedStudioRouteImport } from './routes/_authenticated/studio'
@@ -76,6 +77,11 @@ const AuthenticatedEditRoute = AuthenticatedEditRouteImport.update({
   path: '/edit',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedImagesRoute = AuthenticatedImagesRouteImport.update({
+  id: '/images',
+  path: '/images',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
   id: '/library',
   path: '/library',
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AuthenticatedAccountRoute
   '/director': typeof AuthenticatedDirectorRouteWithChildren
   '/edit': typeof AuthenticatedEditRoute
+  '/images': typeof AuthenticatedImagesRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/movie': typeof AuthenticatedMovieRoute
   '/studio': typeof AuthenticatedStudioRoute
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/account': typeof AuthenticatedAccountRoute
   '/edit': typeof AuthenticatedEditRoute
+  '/images': typeof AuthenticatedImagesRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/movie': typeof AuthenticatedMovieRoute
   '/studio': typeof AuthenticatedStudioRoute
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/director': typeof AuthenticatedDirectorRouteWithChildren
   '/_authenticated/edit': typeof AuthenticatedEditRoute
+  '/_authenticated/images': typeof AuthenticatedImagesRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/movie': typeof AuthenticatedMovieRoute
   '/_authenticated/studio': typeof AuthenticatedStudioRoute
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/director'
     | '/edit'
+    | '/images'
     | '/library'
     | '/movie'
     | '/studio'
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/account'
     | '/edit'
+    | '/images'
     | '/library'
     | '/movie'
     | '/studio'
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/_authenticated/account'
     | '/_authenticated/director'
     | '/_authenticated/edit'
+    | '/_authenticated/images'
     | '/_authenticated/library'
     | '/_authenticated/movie'
     | '/_authenticated/studio'
@@ -310,6 +322,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEditRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/images': {
+      id: '/_authenticated/images'
+      path: '/images'
+      fullPath: '/images'
+      preLoaderRoute: typeof AuthenticatedImagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/library': {
       id: '/_authenticated/library'
       path: '/library'
@@ -381,6 +400,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedDirectorRoute: typeof AuthenticatedDirectorRouteWithChildren
   AuthenticatedEditRoute: typeof AuthenticatedEditRoute
+  AuthenticatedImagesRoute: typeof AuthenticatedImagesRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedMovieRoute: typeof AuthenticatedMovieRoute
   AuthenticatedStudioRoute: typeof AuthenticatedStudioRoute
@@ -390,6 +410,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedDirectorRoute: AuthenticatedDirectorRouteWithChildren,
   AuthenticatedEditRoute: AuthenticatedEditRoute,
+  AuthenticatedImagesRoute: AuthenticatedImagesRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedMovieRoute: AuthenticatedMovieRoute,
   AuthenticatedStudioRoute: AuthenticatedStudioRoute,

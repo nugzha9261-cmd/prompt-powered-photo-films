@@ -6,65 +6,41 @@ import { useAuth } from "@/hooks/use-auth";
 import { CreditsBadge } from "@/components/credits/credits-badge";
 import cineflowIcon from "@/assets/cineflow-icon.png.asset.json";
 
+const LINKS = [
+  { to: "/studio", label: "Studio" },
+  { to: "/images", label: "Image Lab" },
+  { to: "/edit", label: "Edit" },
+  { to: "/movie", label: "Mini-movie" },
+  { to: "/director", label: "AI Director" },
+  { to: "/library", label: "My films" },
+] as const;
+
 export function AppHeader() {
   const { session, ready, signOut } = useAuth();
 
   return (
-    <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 pt-4 sm:gap-4 sm:px-6 sm:pt-8">
-      <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="CineFlow AI home">
-        <img src={cineflowIcon.url} alt="" width={48} height={48} className="size-12 shrink-0 rounded-md object-contain" />
-        <span className="font-display text-2xl tracking-wide">CineFlow AI</span>
+    <header className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 pt-3 sm:flex sm:justify-between sm:gap-4 sm:px-6 sm:pt-8">
+      <Link to="/" className="flex min-w-0 items-center gap-2.5 sm:gap-3" aria-label="CineFlow AI home">
+        <img src={cineflowIcon.url} alt="" width={48} height={48} className="size-9 shrink-0 rounded-md object-contain sm:size-12" />
+        <span className="truncate font-display text-xl tracking-wide sm:text-2xl">CineFlow AI</span>
       </Link>
-      <nav className="flex w-full min-w-0 items-center gap-0.5 overflow-x-auto overscroll-x-contain whitespace-nowrap text-sm [scrollbar-width:none] sm:w-auto sm:gap-1">
+      <nav className="flex shrink-0 items-center gap-1 whitespace-nowrap text-sm">
         {ready && session ? (
           <>
-            <Link
-              to="/studio"
-              className="rounded-sm px-2 py-1.5 text-muted-foreground sm:px-3 transition-colors hover:text-foreground"
-              activeProps={{ className: "text-foreground" }}
-            >
-              Studio
-            </Link>
-            <Link
-              to="/edit"
-              className="rounded-sm px-2 py-1.5 text-muted-foreground sm:px-3 transition-colors hover:text-foreground"
-              activeProps={{ className: "text-foreground" }}
-            >
-              Edit video
-            </Link>
-            <Link
-              to="/movie"
-              className="rounded-sm px-2 py-1.5 text-muted-foreground sm:px-3 transition-colors hover:text-foreground"
-              activeProps={{ className: "text-foreground" }}
-            >
-              Mini-movie
-            </Link>
-            <Link
-              to="/director"
-              className="rounded-sm px-2 py-1.5 text-muted-foreground sm:px-3 transition-colors hover:text-foreground"
-              activeProps={{ className: "text-foreground" }}
-            >
-              AI Director
-            </Link>
-            <Link
-              to="/library"
-              className="rounded-sm px-2 py-1.5 text-muted-foreground sm:px-3 transition-colors hover:text-foreground"
-              activeProps={{ className: "text-foreground" }}
-            >
-              My films
-            </Link>
+            {LINKS.map((l) => (
+              <Link key={l.to} to={l.to}
+                className="hidden rounded-sm px-2 py-1.5 text-muted-foreground transition-colors hover:text-foreground sm:inline lg:px-3"
+                activeProps={{ className: "text-foreground" }}>
+                {l.label}
+              </Link>
+            ))}
             <CreditsBadge />
             <Button asChild variant="ghost" size="icon-sm" title="Account" aria-label="Account">
               <Link to="/account"><UserRound /></Link>
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => void signOut()}
-              title={session.user.email ?? undefined}
-              aria-label="Sign out"
-            >
-              <LogOut /> <span className="hidden sm:inline">Sign out</span>
+            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" onClick={() => void signOut()}
+              title={session.user.email ?? undefined} aria-label="Sign out">
+              <LogOut />
             </Button>
           </>
         ) : ready ? (

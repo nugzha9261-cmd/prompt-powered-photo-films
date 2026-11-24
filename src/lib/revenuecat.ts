@@ -62,9 +62,9 @@ export function setPurchaseUser(userId: string | null) {
 }
 
 export function loadApplePackages(userId: string): Promise<PurchasesPackage[]> {
-  return serialized(async () => {
+  return withTimeout(serialized(async () => {
     const sdk = await sdkForUser(userId);
-    const offerings = await withTimeout(sdk.getOfferings(), 15_000);
+    const offerings = await withTimeout(sdk.getOfferings(), 8_000);
     const offering = offerings.all["default"] ?? offerings.current;
     if (!offering) throw new Error("Subscriptions couldn't load. Please try again later.");
     const packages = offering.availablePackages.filter((pack) => subscriptionPlan(pack.product.identifier));
@@ -72,7 +72,7 @@ export function loadApplePackages(userId: string): Promise<PurchasesPackage[]> {
       throw new Error("Subscriptions couldn't load. Please try again later.");
     }
     return packages;
-  });
+  }), 12_000);
 }
 
 export function purchaseApplePackage(userId: string, pack: PurchasesPackage): Promise<MakePurchaseResult> {

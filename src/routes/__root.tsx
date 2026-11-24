@@ -1,3 +1,4 @@
+import { MobileTabBar } from "@/components/nav/mobile-tab-bar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/hooks/use-auth";
 import {
@@ -129,8 +130,11 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <AuthProvider>
-        <Outlet />
-        <AppFooter />
+        <div className="pb-[calc(4.5rem+env(safe-area-inset-bottom))] sm:pb-0">
+          <Outlet />
+          <AppFooter />
+        </div>
+        <MobileTabBar />
       </AuthProvider>
       <Toaster theme="dark" position="top-center" />
     </QueryClientProvider>

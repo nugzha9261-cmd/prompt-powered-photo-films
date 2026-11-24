@@ -29,6 +29,7 @@ import { preparePhoto, type Photo } from "@/lib/photo";
 import { cn } from "@/lib/utils";
 import { FinishPanel } from "@/components/finish/finish-panel";
 import { STYLE_TEMPLATES } from "@/lib/templates";
+import { STUDIO_HANDOFF_KEY } from "@/lib/image-lab";
 import { downloadVideo, signedUrls } from "@/lib/video-files";
 import { startVideo, syncVideo } from "@/lib/video.functions";
 import {
@@ -127,6 +128,10 @@ function Studio() {
   const pollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cancelled = useRef(false);
   const busy = phase === "starting" || phase === "generating";
+  const previewRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (busy && window.matchMedia("(max-width: 1023px)").matches) previewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [busy]);
   const firstPhoto = slots.find((s) => s.photo)?.photo ?? null;
 
   useEffect(() => {
@@ -167,6 +172,15 @@ function Studio() {
     },
     [mode],
   );
+
+  // A still chosen in the Image Lab arrives through session storage.
+  useEffect(() => {
+    const dataUrl = sessionStorage.getItem(STUDIO_HANDOFF_KEY);
+    if (!dataUrl) return;
+    sessionStorage.removeItem(STUDIO_HANDOFF_KEY);
+    void fetch(dataUrl).then((r) => r.blob()).then((b) => setSlotPhoto(0, new File([b], "image-lab.jpg", { type: "image/jpeg" })));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const clearSlot = (index: number) =>
     setSlots((prev) => prev.map((s, i) => (i === index ? { ...s, photo: null } : s)));
@@ -260,17 +274,17 @@ function Studio() {
     <div className="grain min-h-screen bg-background text-foreground">
       <AppHeader />
 
-      <main className="mx-auto grid max-w-6xl gap-12 px-6 pb-20 pt-12 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+      <main className="mx-auto grid max-w-6xl gap-6 px-4 pb-10 pt-5 sm:gap-12 sm:px-6 sm:pb-20 sm:pt-12 grid-cols-[minmax(0,1fr)] lg:grid-cols-[1fr_1.1fr] lg:gap-16">
         <section className="flex flex-col">
-          <h1 className="font-display text-5xl leading-[1.02] sm:text-6xl">
+          <h1 className="font-display text-4xl leading-[1.02] sm:text-6xl">
             The studio<em className="text-primary">.</em>
           </h1>
-          <p className="mt-4 max-w-md text-base text-muted-foreground">
+          <p className="mt-2 max-w-md text-sm text-muted-foreground sm:mt-4 sm:text-base">
             Pick how your photos should be used, describe the motion, and every finished video is
             saved to <Link to="/library" className="text-primary hover:underline">My films</Link>.
           </p>
 
-          <div className="mt-9 space-y-7">
+          <div className="mt-6 space-y-6 sm:mt-9 sm:space-y-7">
             <div>
               <StepLabel n={1}>How to use your photos</StepLabel>
               <div className="grid grid-cols-2 gap-2">
@@ -412,6 +426,7 @@ function Studio() {
               </div>
             </div>
 
+            <div className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-30 -mx-4 bg-background/90 px-4 py-2 backdrop-blur sm:static sm:mx-0 sm:bg-transparent sm:p-0">
             <Button
               size="lg"
               className="h-12 w-full text-base font-semibold"
@@ -421,15 +436,16 @@ function Studio() {
               {busy ? <Loader2 className="animate-spin" /> : <Sparkles />}
               {busy ? "Developing your video…" : "Bring it to life"}
             </Button>
+            </div>
           </div>
         </section>
 
-        <section aria-live="polite" className="lg:pt-4">
-          <div className="sprockets rounded-sm bg-film px-4 py-6 shadow-2xl lg:sticky lg:top-6">
+        <section ref={previewRef} aria-live="polite" className="order-first scroll-mt-4 lg:order-none lg:pt-4">
+          <div className="sprockets rounded-sm bg-film px-3 py-4 shadow-2xl sm:px-4 sm:py-6 lg:sticky lg:top-6">
             <div
               className={cn(
                 "relative mx-auto flex items-center justify-center overflow-hidden rounded-sm bg-muted",
-                aspect === "16:9" ? "aspect-video w-full" : "aspect-[9/16] max-h-[640px]",
+                aspect === "16:9" ? "aspect-video w-full" : "aspect-[9/16] h-[52vh] max-w-full sm:h-[640px]",
               )}
             >
               {result ? (
@@ -453,9 +469,9 @@ function Studio() {
                   )}
                 </>
               ) : (
-                <div className="flex flex-col items-center gap-3 p-8 text-center text-muted-foreground">
-                  <Film className="size-8 text-primary/70" />
-                  <p className="font-display text-2xl text-foreground">Your film appears here</p>
+                <div className="flex flex-col items-center gap-2 p-4 text-center text-muted-foreground sm:gap-3 sm:p-8">
+                  <Film className="size-6 text-primary/70 sm:size-8" />
+                  <p className="font-display text-xl text-foreground sm:text-2xl">Your film appears here</p>
                   <p className="max-w-xs text-sm">Add your photos and a prompt to get started.</p>
                 </div>
               )}

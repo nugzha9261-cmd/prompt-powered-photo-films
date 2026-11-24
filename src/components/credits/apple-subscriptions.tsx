@@ -30,7 +30,7 @@ export function AppleSubscriptions() {
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
 
   const load = async () => {
-    if (!userId) return;
+    if (!userId) { setLoading(false); return; }
     setLoading(true); setError(null);
     try {
       const next = await loadApplePackages(userId);
@@ -106,6 +106,12 @@ export function AppleSubscriptions() {
     {pending && <p role="status" className="flex items-start gap-2 text-sm text-muted-foreground"><Loader2 className="mt-0.5 size-4 shrink-0 animate-spin" />Apple purchase completed. Your credits are awaiting confirmation; don’t purchase again.</p>}
     {subscription.isError && <p role="alert" className="text-sm text-destructive">Couldn't check your subscription. <Button variant="link" size="sm" onClick={() => void subscription.refetch()}>Retry</Button></p>}
     {!subscription.data?.checkoutReady && !subscription.isPending && !subscription.isError && <p className="text-sm text-muted-foreground">New subscriptions are currently unavailable.</p>}
+    {subscription.data?.checkoutReady && !loading && !packages.length && <div className="space-y-2 opacity-70">
+      {SUBSCRIPTION_PLANS.map((plan) => <div key={plan.id} className="flex items-center justify-between gap-3 rounded-md border border-border bg-card p-3">
+        <div className="min-w-0"><p className="font-medium">{plan.label}</p><p className="text-xs text-muted-foreground">{plan.credits} credits / {plan.period} · {plan.price}</p></div>
+        <Button size="sm" variant="outline" disabled={Boolean(busy)} onClick={() => void load()}><RefreshCw />Retry</Button>
+      </div>)}
+    </div>}
     {subscription.data?.checkoutReady && (loading ? <p role="status" className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="size-4 animate-spin" />Loading Apple prices…</p> : <div className="space-y-2">
       {SUBSCRIPTION_PLANS.map((plan) => {
         const pack = packages.find((item) => item.product.identifier === plan.id);
@@ -120,7 +126,7 @@ export function AppleSubscriptions() {
         </div>;
       })}
     </div>)}
-    {error && <div role="alert" className="space-y-2"><p className="text-sm text-destructive">{error}</p>{!packages.length && <Button size="sm" variant="outline" disabled={loading || Boolean(busy)} onClick={() => void load()}><RefreshCw />Retry Apple prices</Button>}</div>}
+    {error && <p role="alert" className="text-sm text-destructive">{error}{!packages.length && " Apple may still be preparing new plans — tap Retry in a moment."}</p>}
     <div className="flex flex-wrap gap-2">
       <Button size="sm" variant="outline" disabled={Boolean(busy)} onClick={() => void restore()}>{busy === "restore" ? <Loader2 className="animate-spin" /> : <RotateCcw />}Restore Purchases</Button>
       <Button size="sm" variant="ghost" disabled={Boolean(busy)} onClick={() => void manage()}><ExternalLink />Manage Subscription</Button>

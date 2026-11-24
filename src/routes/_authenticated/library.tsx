@@ -104,11 +104,11 @@ function Library() {
             <h1 className="font-display text-5xl sm:text-6xl">My films</h1>
             <p className="mt-2 text-sm text-muted-foreground">Every video you make is kept here.</p>
           </div>
-          <Button asChild>
+          <div className="flex gap-2"><Button asChild variant="outline"><Link to="/movie">Mini-movie</Link></Button><Button asChild>
             <Link to="/studio">
               <Plus /> New video
             </Link>
-          </Button>
+          </Button></div>
         </div>
 
         {isLoading ? (

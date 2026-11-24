@@ -30,3 +30,9 @@
 - [x] Hide unfinished purchases; point mobile shell to the custom domain.
 - [x] Verify deletion and public pages; document remaining store submission steps.
 - [ ] Final iPhone submission — deferred until conversion: real-device checks, final icon, legal review, store disclosures and reviewer account.
+
+# Phone app polish & Image Lab
+- [x] Bottom tab bar on phones; compact header
+- [x] Phone-friendly Studio (preview on top, sticky create button)
+- [x] Apple prices never spin forever; show plans with Retry
+- [x] Image Lab: text-to-image and photo remix, 1 credit = 4 images, Make video / Vary / Download

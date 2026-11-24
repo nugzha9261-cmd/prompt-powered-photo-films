@@ -47,7 +47,7 @@ function AccountPage() {
         <h2 className="font-display text-2xl">Your sign-in</h2>
         <p className="mt-3 break-all text-sm text-muted-foreground">{session?.user.email}</p>
         <p className="mt-4 text-sm text-muted-foreground">To reset your password, sign out and choose Forgot password? on the sign-in page.</p>
-        <Button className="mt-4" variant="outline" onClick={() => void signOut()}><KeyRound />Sign out to reset password</Button>
+        <Button className="mt-4" variant="outline" onClick={() => void signOut()}><KeyRound />Sign out</Button>
       </section>
       <section className="border-b border-border py-8">
         <h2 className="font-display text-2xl">Privacy and help</h2>
