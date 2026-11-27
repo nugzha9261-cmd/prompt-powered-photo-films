@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { CREDITS_PER_EDIT, CREDITS_PER_VIDEO, FREE_SIGNUP_CREDITS, canAfford, SUBSCRIPTION_PLANS } from "./credits";
+import { CREDITS_PER_EDIT, CREDITS_PER_VIDEO, FREE_SIGNUP_CREDITS, canAfford, SUBSCRIPTION_PLANS, videoCreditCost } from "./credits";
 
 describe("credits", () => {
-  it("new accounts get 2 free videos", () => {
-    expect(FREE_SIGNUP_CREDITS / CREDITS_PER_VIDEO).toBe(2);
+  it("new accounts get exactly one 5-second trial video", () => {
+    expect(FREE_SIGNUP_CREDITS).toBe(2);
+    expect(FREE_SIGNUP_CREDITS / CREDITS_PER_VIDEO).toBe(1);
   });
   it("blocks generation at zero credits", () => {
     expect(canAfford(0, CREDITS_PER_VIDEO)).toBe(false);
@@ -21,11 +22,8 @@ describe("credits", () => {
   });
 });
 
-import { dailyClaimWait } from "./credits";
-describe("daily free video", () => {
-  const now = Date.parse("2026-11-19T12:00:00Z");
-  it("is available when never claimed", () => expect(dailyClaimWait(null, now)).toBe(0));
-  it("waits 24 hours after a claim", () =>
-    expect(dailyClaimWait("2026-11-19T06:00:00Z", now)).toBe(18 * 3600_000));
-  it("is available again after 24 hours", () => expect(dailyClaimWait("2026-11-18T11:00:00Z", now)).toBe(0));
+describe("duration-based video charges", () => {
+  it("charges 2 credits for 5 seconds", () => expect(videoCreditCost(5)).toBe(2));
+  it("charges double for 10 seconds", () => expect(videoCreditCost(10)).toBe(4));
+  it("blocks a 10-second video with only 3 credits", () => expect(canAfford(3, videoCreditCost(10))).toBe(false));
 });

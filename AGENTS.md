@@ -30,3 +30,7 @@
 - RevenueCat connectivity TEST events use a separate minimal schema after authorization and body limits; never access accounts or receipts for them. Why: dashboard null placeholders must not fail purchase validation or grant access.
 - Image Lab (`/images`) generates/remixes stills via the `generateImages` server fn (`src/lib/image.functions.ts`, AI Gateway SDK image surfaces), spending credits atomically and refunding on failure; rules in `src/lib/image-lab.ts` (tested). Results are returned to the browser, not stored; "Make video" hands a still to Studio via sessionStorage. Why: keep model keys server-side and avoid storing throwaway drafts.
 - Below the sm breakpoint, navigation is a fixed bottom tab bar (`src/components/nav/mobile-tab-bar.tsx`) and the header shows only logo, credits and account. Why: the app runs in a phone shell and must feel native.
+
+- Use shared duration charges, preserving the current HD model; Veo only accepts 4/6/8s. Why: supported lengths without quality loss.
+- Use PasswordInput on password screens. Why: accessible visibility toggles.
+- Bound native purchase setup steps. Why: keep Retry runnable.

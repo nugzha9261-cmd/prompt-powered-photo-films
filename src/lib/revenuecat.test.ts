@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { APPLE_PUBLIC_SDK_KEY, loadApplePackages, purchaseWasCancelled, setPurchaseUser, supportsApplePurchases, validAppleCatalog } from "./revenuecat";
 
-const sdk = vi.hoisted(() => ({ configured: false, userId: "", configure: vi.fn(), login: vi.fn(), logout: vi.fn(), offerings: vi.fn() }));
+const sdk = vi.hoisted(() => ({ configured: false, userId: "", configure: vi.fn(), login: vi.fn(), logout: vi.fn(), offerings: vi.fn(), check: vi.fn() }));
 vi.mock("@revenuecat/purchases-capacitor", () => ({
-  LOG_LEVEL: { ERROR: "ERROR" },
+  LOG_LEVEL: { ERROR: "ERROR", DEBUG: "DEBUG" },
   Purchases: {
-    isConfigured: async () => ({ isConfigured: sdk.configured }),
-    setLogLevel: vi.fn(),
+    isConfigured: sdk.check,
+    setLogLevel: vi.fn(async () => {}),
     configure: async (options: { apiKey: string; appUserID: string }) => { sdk.configure(options); sdk.configured = true; sdk.userId = options.appUserID; },
     getAppUserID: async () => ({ appUserID: sdk.userId }),
     logIn: async (options: { appUserID: string }) => { sdk.login(options); sdk.userId = options.appUserID; },
@@ -16,6 +16,7 @@ vi.mock("@revenuecat/purchases-capacitor", () => ({
 }));
 beforeEach(() => {
   vi.clearAllMocks(); sdk.configured = false; sdk.userId = "";
+  sdk.check.mockImplementation(async () => ({ isConfigured: sdk.configured }));
   vi.stubGlobal("Capacitor", { isNativePlatform: () => true, getPlatform: () => "ios" });
 });
 afterEach(async () => { await setPurchaseUser(null); vi.unstubAllGlobals(); });
@@ -56,5 +57,32 @@ describe("native purchase identity", () => {
     expect(purchaseWasCancelled({ code: "1" })).toBe(true);
     expect(purchaseWasCancelled({ userCancelled: true })).toBe(true);
     expect(purchaseWasCancelled({ code: "2" })).toBe(false);
+  });
+  it("rejects a missing native purchase plugin without waiting for Apple", async () => {
+    vi.stubGlobal("Capacitor", { isNativePlatform: () => true, getPlatform: () => "ios", isPluginAvailable: () => false });
+    await expect(setPurchaseUser("account-a")).rejects.toThrow("Purchases are missing");
+    expect(sdk.configure).not.toHaveBeenCalled();
+  });
+  it("releases a stuck account initialization so Retry can reach the store", async () => {
+    vi.useFakeTimers();
+    try {
+      sdk.check.mockImplementationOnce(() => new Promise(() => {}));
+      const init = expect(setPurchaseUser("account-a")).rejects.toThrow("Checking iPhone purchases timed out");
+      await vi.advanceTimersByTimeAsync(10_000);
+      await init;
+      sdk.offerings.mockResolvedValue({ all: {}, current: null });
+      await expect(loadApplePackages("account-a")).rejects.toThrow("no offering");
+      expect(sdk.offerings).toHaveBeenCalledOnce();
+    } finally { vi.useRealTimers(); }
+  });
+  it("allows Apple price requests 30 seconds before timing out", async () => {
+    await setPurchaseUser("account-a");
+    vi.useFakeTimers();
+    try {
+      sdk.offerings.mockImplementationOnce(() => new Promise(() => {}));
+      const result = expect(loadApplePackages("account-a")).rejects.toThrow("Loading Apple prices timed out");
+      await vi.advanceTimersByTimeAsync(30_000);
+      await result;
+    } finally { vi.useRealTimers(); }
   });
 });

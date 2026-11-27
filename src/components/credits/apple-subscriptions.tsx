@@ -27,17 +27,19 @@ export function AppleSubscriptions() {
   const [busy, setBusy] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
   const mounted = useRef(true);
+  const requestVersion = useRef(0);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
 
   const load = async () => {
     if (!userId) { setLoading(false); return; }
-    setLoading(true); setError(null);
+    const version = ++requestVersion.current;
+    setLoading(true); setError(null); setPackages([]);
     try {
       const next = await loadApplePackages(userId);
-      if (mounted.current) setPackages(next);
+      if (mounted.current && version === requestVersion.current) setPackages(next);
     } catch (e) {
-      if (mounted.current) setError(e instanceof Error ? e.message : "Subscriptions couldn't load.");
-    } finally { if (mounted.current) setLoading(false); }
+      if (mounted.current && version === requestVersion.current) setError(e instanceof Error ? e.message : "Subscriptions couldn't load.");
+    } finally { if (mounted.current && version === requestVersion.current) setLoading(false); }
   };
   useEffect(() => { void load(); }, [userId]);
 
@@ -126,12 +128,12 @@ export function AppleSubscriptions() {
         </div>;
       })}
     </div>)}
-    {error && <p role="alert" className="text-sm text-destructive">{error}{!packages.length && " Apple may still be preparing new plans — tap Retry in a moment."}</p>}
+    {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
     <div className="flex flex-wrap gap-2">
       <Button size="sm" variant="outline" disabled={Boolean(busy)} onClick={() => void restore()}>{busy === "restore" ? <Loader2 className="animate-spin" /> : <RotateCcw />}Restore Purchases</Button>
       <Button size="sm" variant="ghost" disabled={Boolean(busy)} onClick={() => void manage()}><ExternalLink />Manage Subscription</Button>
     </div>
-    <p className="text-xs leading-5 text-muted-foreground">Payment is charged to your Apple account. Subscriptions renew automatically unless canceled at least 24 hours before the current period ends. Your account is charged for renewal within 24 hours before that period ends. Manage or cancel in Apple account settings. Credits are granted for each paid period, carry over, and remain after refunds. One credit covers one video generation or edited section up to 10 seconds; longer edits use multiple credits. Restoring does not grant credits again. Premium removes the export watermark while active.</p>
+    <p className="text-xs leading-5 text-muted-foreground">Payment is charged to your Apple account. Subscriptions renew automatically unless canceled at least 24 hours before the current period ends. Your account is charged for renewal within 24 hours before that period ends. Manage or cancel in Apple account settings. Credits are granted for each paid period, carry over, and remain after refunds. 5-second video generations cost 2 credits and 10-second generations cost 4. Each image costs 1 credit; edits cost 1 credit per section up to 10 seconds. Restoring does not grant credits again. Premium removes the export watermark while active.</p>
     <div className="flex flex-wrap gap-4 text-xs text-muted-foreground"><Link className="underline" to="/privacy">Privacy policy</Link><Link className="underline" to="/terms">Terms of use</Link><Link className="underline" to="/support">Support</Link></div>
   </section>;
 }

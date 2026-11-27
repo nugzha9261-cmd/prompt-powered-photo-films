@@ -21,7 +21,7 @@ export const Route = createFileRoute("/_authenticated/images")({
       { title: "Image Lab — CineFlow AI" },
       { name: "description", content: "Create AI images from text or remix your own photo, then turn them into videos." },
       { property: "og:title", content: "Image Lab — CineFlow AI" },
-      { property: "og:description", content: "Text-to-image and photo remix, four images per credit." },
+      { property: "og:description", content: "Text-to-image and photo remix, one image per credit." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -88,7 +88,7 @@ function ImageLab() {
       <main className="mx-auto max-w-5xl px-4 pb-10 pt-5 sm:px-6 sm:pb-20 sm:pt-12">
         <h1 className="font-display text-4xl sm:text-6xl">Image Lab<em className="text-primary">.</em></h1>
         <p className="mt-2 max-w-lg text-sm text-muted-foreground sm:text-base">
-          Describe a scene or remix your own photo. Every run makes {IMAGES_PER_RUN} images for 1 credit — pick one and bring it to life.
+          Describe a scene or remix your own photo. Each image costs 1 credit.
         </p>
 
         <div className="mt-6 space-y-6">
@@ -139,13 +139,13 @@ function ImageLab() {
 
           <Button size="lg" className="h-12 w-full text-base font-semibold sm:w-auto" disabled={busy || prompt.trim().length < 3} onClick={() => void create()}>
             {busy ? <Loader2 className="animate-spin" /> : <Sparkles />}
-            {busy ? "Creating 4 images…" : `Create ${IMAGES_PER_RUN} images · 1 credit`}
+            {busy ? "Creating image…" : "Create image · 1 credit"}
           </Button>
           {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
         </div>
 
         {(busy || images.length > 0) && (
-          <section aria-live="polite" className="mt-8 grid grid-cols-2 gap-3">
+          <section aria-live="polite" className="mt-8 grid max-w-lg grid-cols-1 gap-3">
             {busy ? Array.from({ length: IMAGES_PER_RUN }, (_, i) => (
               <div key={i} className={cn("animate-pulse rounded-md bg-muted", shape === "portrait" ? "aspect-[2/3]" : shape === "landscape" ? "aspect-[3/2]" : "aspect-square")} />
             )) : images.map((src, i) => (

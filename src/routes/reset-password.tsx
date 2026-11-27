@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import { AppHeader } from "@/components/app-header";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/password-input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -59,7 +59,7 @@ function ResetPassword() {
           <form onSubmit={submit} className="mt-8 space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="new-password">New password</Label>
-              <Input
+              <PasswordInput
                 id="new-password"
                 type="password"
                 autoComplete="new-password"

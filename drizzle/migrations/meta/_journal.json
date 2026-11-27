@@ -36,6 +36,13 @@
       "when": 1795410816613,
       "tag": "0004_harden_subscription_delivery",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795785510776,
+      "tag": "0005_disable_daily_free_credit",
+      "breakpoints": true
     }
   ]
 }

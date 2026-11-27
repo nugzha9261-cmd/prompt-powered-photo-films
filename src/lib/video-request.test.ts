@@ -14,7 +14,7 @@ const base = {
   mode: "single" as const,
   images: [photo()],
   prompt: "Gentle wind moves the trees",
-  duration: 8 as const,
+  duration: 5 as const,
   aspectRatio: "16:9" as const,
 };
 
@@ -25,8 +25,9 @@ describe("video request rules", () => {
     expect(ok({ ...base, prompt: "  " })).toBe(false);
   });
 
-  it("only allows 5, 8 or 10 second clips", () => {
-    expect(ok({ ...base, duration: 7 })).toBe(false);
+  it("only allows 5 or 10 second clips", () => {
+    expect(ok({ ...base, duration: 8 })).toBe(false);
+    expect(ok({ ...base, duration: 5 })).toBe(true);
     expect(ok({ ...base, duration: 10 })).toBe(true);
   });
 
@@ -58,7 +59,7 @@ describe("video request rules", () => {
   it("sends the photo as the first frame with the chosen length", () => {
     const body = buildVideoRequest(startVideoSchema.parse(base));
     expect(body.input[0]).toMatchObject({ type: "image", mime_type: "image/jpeg" });
-    expect(body.response_format.duration).toBe("8s");
+    expect(body.response_format.duration).toBe("5s");
     expect(body.response_format.aspect_ratio).toBe("16:9");
   });
 
@@ -87,5 +88,13 @@ describe("video request rules", () => {
   it("picks portrait for tall photos", () => {
     expect(aspectForSize(1080, 1920)).toBe("9:16");
     expect(aspectForSize(1920, 1080)).toBe("16:9");
+  });
+  it("preserves the existing HD resolution and model for both durations", () => {
+    for (const duration of [5, 10]) {
+      const body = buildVideoRequest(startVideoSchema.parse({ ...base, duration }));
+      expect(body.model).toBe("google/gemini-omni-1.1-flash");
+      expect(body.response_format.resolution).toBe("720p");
+      expect(body.response_format.duration).toBe(`${duration}s`);
+    }
   });
 });

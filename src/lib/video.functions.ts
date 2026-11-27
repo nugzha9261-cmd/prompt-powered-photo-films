@@ -1,10 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { generateVideo, GatewayError } from "@lovable.dev/ai-gateway";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { buildEditRequest, editVideoSchema, joinedEditSchema, EDIT_UPLOAD_MAX_SECONDS } from "./video-edit";
 import { buildVideoRequest, startVideoSchema } from "./video-request";
-import { CREDITS_PER_EDIT, CREDITS_PER_VIDEO, OUT_OF_CREDITS } from "./credits";
+import { CREDITS_PER_EDIT, videoCreditCost, OUT_OF_CREDITS } from "./credits";
 
 /** Atomically takes credits before a paid job; false when the balance is too low. */
 async function spend(userId: string, amount: number) {
@@ -55,17 +56,19 @@ export const startVideo = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => startVideoSchema.parse(input))
   .handler(async ({ data, context }) => {
-    if (!(await spend(context.userId, CREDITS_PER_VIDEO))) return outOfCredits;
-    const response = await fetch(`${GATEWAY_URL}/v1/videos`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${requireKey()}`, "Content-Type": "application/json" },
-      body: JSON.stringify(buildVideoRequest(data)),
-    });
-    if (!response.ok) {
-      await refund(context.userId, CREDITS_PER_VIDEO);
-      return { ok: false as const, error: await gatewayErrorMessage(response) };
+    const cost = videoCreditCost(data.duration);
+    if (!(await spend(context.userId, cost))) return outOfCredits;
+    let job;
+    try {
+      job = await generateVideo(buildVideoRequest(data));
+    } catch (error) {
+      // Never replay an uncertain generation: the remote job may already exist.
+      if (error instanceof GatewayError && error.outcome === "unknown") {
+        return { ok: false as const, error: "Generation status is uncertain. Please contact Support before trying again." };
+      }
+      await refund(context.userId, cost);
+      return { ok: false as const, error: "Your video could not start. Your credits were returned." };
     }
-    const job = (await response.json()) as { id: string; status: JobStatus };
 
     // Rows and files are written server-side so users can't forge job ids or statuses.
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

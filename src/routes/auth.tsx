@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { AppHeader } from "@/components/app-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/password-input";
 import { Label } from "@/components/ui/label";
 import { rememberAfterAuth, useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -161,7 +162,7 @@ function AuthPage() {
                       </button>
                     )}
                   </div>
-                  <Input
+                  <PasswordInput
                     id="password"
                     type="password"
                     autoComplete={view === "signup" ? "new-password" : "current-password"}

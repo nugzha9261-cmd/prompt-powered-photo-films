@@ -2,7 +2,7 @@ import { z } from "zod";
 
 /** Image Lab rules shared by the form and the server. */
 export const CREDITS_PER_IMAGE_RUN = 1;
-export const IMAGES_PER_RUN = 4;
+export const IMAGES_PER_RUN = 1;
 export const MAX_IMAGE_PROMPT = 1000;
 /** Base64 cap for a remix source photo (~6 MB of JPEG). */
 export const MAX_SOURCE_BASE64 = 8_000_000;

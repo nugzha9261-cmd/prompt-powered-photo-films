@@ -12,9 +12,16 @@ export function validAppleCatalog(products: { identifier: string; subscriptionPe
     product.identifier === plan.id && product.subscriptionPeriod === STORE_PERIODS[plan.id] && product.price > 0,
   ).length === 1);
 }
-function withTimeout<T>(task: Promise<T>, ms: number): Promise<T> {
-  return Promise.race([task, new Promise<T>((_, reject) => setTimeout(
-    () => reject(new Error("Apple is taking too long to respond. Check your connection and tap Retry.")), ms))]);
+function withTimeout<T>(task: Promise<T>, ms: number, stage: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`${stage} timed out. Check your connection and tap Retry.`)), ms);
+    task.then((value) => { clearTimeout(timer); resolve(value); }, (error: unknown) => { clearTimeout(timer); reject(error); });
+  });
+}
+const SETUP_WAIT = 10_000;
+const STORE_WAIT = 30_000;
+function nativeStep<T>(task: Promise<T>, stage: string) {
+  return withTimeout(task, SETUP_WAIT, stage);
 }
 let desiredUser: string | null = null;
 let queue: Promise<unknown> = Promise.resolve();
@@ -34,16 +41,20 @@ export function supportsApplePurchases() {
 async function sdkForUser(userId: string) {
   if (!supportsApplePurchases()) throw new Error("Apple purchases are available in the iPhone app.");
   if (desiredUser !== userId) throw new Error("Your account changed. Reopen Your credits.");
-  const { Purchases, LOG_LEVEL } = await import("@revenuecat/purchases-capacitor");
-  const { isConfigured } = await Purchases.isConfigured();
-  if (!isConfigured) {
-    await Purchases.setLogLevel({ level: LOG_LEVEL.ERROR });
-    await Purchases.configure({ apiKey: APPLE_PUBLIC_SDK_KEY, appUserID: userId });
-  } else {
-    const { appUserID } = await Purchases.getAppUserID();
-    if (appUserID !== userId) await Purchases.logIn({ appUserID: userId });
+  const cap = (window as { Capacitor?: { isPluginAvailable?: (name: string) => boolean } }).Capacitor;
+  if (cap?.isPluginAvailable && !cap.isPluginAvailable("Purchases")) {
+    throw new Error("Purchases are missing from this iPhone app version. Update CineFlow in TestFlight.");
   }
-  if (desiredUser !== userId || (await Purchases.getAppUserID()).appUserID !== userId) {
+  const { Purchases, LOG_LEVEL } = await nativeStep(import("@revenuecat/purchases-capacitor"), "Loading purchases");
+  const { isConfigured } = await nativeStep(Purchases.isConfigured(), "Checking iPhone purchases");
+  if (!isConfigured) {
+    await nativeStep(Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG }), "Preparing purchases");
+    await nativeStep(Purchases.configure({ apiKey: APPLE_PUBLIC_SDK_KEY, appUserID: userId }), "Connecting RevenueCat");
+  } else {
+    const { appUserID } = await nativeStep(Purchases.getAppUserID(), "Checking purchase account");
+    if (appUserID !== userId) await nativeStep(Purchases.logIn({ appUserID: userId }), "Connecting purchase account");
+  }
+  if (desiredUser !== userId || (await nativeStep(Purchases.getAppUserID(), "Verifying purchase account")).appUserID !== userId) {
     throw new Error("Your account changed. Reopen Your credits.");
   }
   return Purchases;
@@ -55,24 +66,27 @@ export function setPurchaseUser(userId: string | null) {
   return serialized(async () => {
     if (!supportsApplePurchases()) return;
     if (userId) { if (desiredUser === userId) await sdkForUser(userId); return; }
-    const { Purchases } = await import("@revenuecat/purchases-capacitor");
-    if (!(await Purchases.isConfigured()).isConfigured) return;
-    if (!(await Purchases.getAppUserID()).appUserID.startsWith("$RCAnonymousID:")) await Purchases.logOut();
+    const { Purchases } = await nativeStep(import("@revenuecat/purchases-capacitor"), "Loading purchases");
+    if (!(await nativeStep(Purchases.isConfigured(), "Checking iPhone purchases")).isConfigured) return;
+    if (!(await nativeStep(Purchases.getAppUserID(), "Checking purchase account")).appUserID.startsWith("$RCAnonymousID:")) {
+      await nativeStep(Purchases.logOut(), "Disconnecting purchase account");
+    }
   });
 }
 
 export function loadApplePackages(userId: string): Promise<PurchasesPackage[]> {
-  return withTimeout(serialized(async () => {
+  return serialized(async () => {
     const sdk = await sdkForUser(userId);
-    const offerings = await withTimeout(sdk.getOfferings(), 8_000);
+    const offerings = await withTimeout(sdk.getOfferings(), STORE_WAIT, "Loading Apple prices");
+    if (desiredUser !== userId) throw new Error("Your account changed. Reopen Your credits.");
     const offering = offerings.all["default"] ?? offerings.current;
-    if (!offering) throw new Error("Subscriptions couldn't load. Please try again later.");
+    if (!offering) throw new Error("RevenueCat returned no offering. Please contact Support.");
     const packages = offering.availablePackages.filter((pack) => subscriptionPlan(pack.product.identifier));
     if (packages.length !== 3 || !validAppleCatalog(packages.map((pack) => pack.product))) {
-      throw new Error("Subscriptions couldn't load. Please try again later.");
+      throw new Error("Apple returned an incomplete subscription catalog. Please contact Support.");
     }
     return packages;
-  }), 12_000);
+  });
 }
 
 export function purchaseApplePackage(userId: string, pack: PurchasesPackage): Promise<MakePurchaseResult> {

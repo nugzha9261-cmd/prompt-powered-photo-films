@@ -1,7 +1,7 @@
 /** Credit rules shared by the server (charging) and the app (labels, paywall). */
 export const FREE_SIGNUP_CREDITS = 2;
-/** One credit buys one generated video or one edited section. */
-export const CREDITS_PER_VIDEO = 1;
+/** Two credits buy a 5-second generation; editing is charged per section. */
+export const CREDITS_PER_VIDEO = 2;
 export const CREDITS_PER_EDIT = 1;
 
 export const OUT_OF_CREDITS = "OUT_OF_CREDITS";
@@ -11,7 +11,7 @@ export type SubscriptionPlan = {
   label: string;
   price: string;
   period: string;
-  /** Videos granted each billing period. */
+  /** Credits granted each billing period. */
   credits: number;
   badge?: string;
 };
@@ -26,12 +26,7 @@ export function canAfford(balance: number | null | undefined, cost: number) {
   return (balance ?? 0) >= cost;
 }
 
-/** Free credits claimable once per day (does not stack across missed days). */
-export const DAILY_FREE_CREDITS = 1;
-export const DAILY_CLAIM_HOURS = 24;
-
-/** Milliseconds until the daily credit can be claimed again (0 = available now). */
-export function dailyClaimWait(lastClaim: string | null | undefined, now = Date.now()) {
-  if (!lastClaim) return 0;
-  return Math.max(0, new Date(lastClaim).getTime() + DAILY_CLAIM_HOURS * 3600_000 - now);
+/** Server and UI must use the same duration-based charge. */
+export function videoCreditCost(seconds: 5 | 10) {
+  return seconds === 10 ? 4 : 2;
 }

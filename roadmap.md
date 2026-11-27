@@ -7,15 +7,15 @@
 - [x] Paid credits carry over on renewal and remain after refunds; refunds end premium access.
 - [x] Verify webhook authorization/deduplication, database grants, account ownership and saved test-payment readback through signed-in UI; 50 focused tests passed.
 - [x] Confirm published Apple purchase changes — live endpoint accepts authorized minimal tests (200).
-- [ ] Fix repeated RevenueCat dashboard test rejection and verify the published endpoint.
-- [ ] Apple payment activation — authorization and catalog confirmed; awaiting successful dashboard test and native purchase verification.
+- [x] RevenueCat dashboard connectivity test confirmed 200.
+- [ ] Apple payment activation — dashboard test confirmed; blocked on owner's native purchase verification.
 - [ ] Native StoreKit purchase/renewal/restore verification — blocked: owner's updated iPhone build, controlled sandbox configuration and Apple sandbox/TestFlight testing.
 - [ ] Android purchases — blocked: Google Play public SDK key and store catalog configuration.
 
 # Phase 1 growth
 - [x] Style templates in Studio
 - [x] Background music on finished videos
-- [x] Daily free video credit
+- [x] Daily free video reward retired
 - [x] Phase 2: AI voiceover
 - [x] Phase 3: mini-movies, social export, watermark
 
@@ -35,4 +35,11 @@
 - [x] Bottom tab bar on phones; compact header
 - [x] Phone-friendly Studio (preview on top, sticky create button)
 - [x] Apple prices never spin forever; show plans with Retry
-- [x] Image Lab: text-to-image and photo remix, 1 credit = 4 images, Make video / Vary / Download
+- [x] Image Lab: text-to-image and photo remix, 1 credit = 1 image, Make video / Vary / Download
+
+# Cost and account fixes
+- [x] 5-second generation: 2 credits; 10 seconds: 4 credits; preserve 720p quality/model.
+- [x] One-time signup allowance: one 5-second video; remove daily claims server-side.
+- [x] Password visibility on sign-in, signup and recovery.
+- [x] Payment initialization cannot block Retry forever; 30-second price wait and stage-specific errors tested.
+- [ ] TestFlight payment loading and purchase check — blocked on owner publishing and testing on iPhone.

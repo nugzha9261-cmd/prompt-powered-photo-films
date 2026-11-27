@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { CREDITS_PER_IMAGE_RUN, IMAGES_PER_RUN, buildImagePrompt, generateImagesSchema } from "./image-lab";
 
 describe("image lab rules", () => {
-  it("one credit buys four images", () => {
+  it("one credit buys one image", () => {
     expect(CREDITS_PER_IMAGE_RUN).toBe(1);
-    expect(IMAGES_PER_RUN).toBe(4);
+    expect(IMAGES_PER_RUN).toBe(1);
   });
   it("rejects empty prompts and unknown shapes", () => {
     expect(generateImagesSchema.safeParse({ prompt: " ", shape: "square" }).success).toBe(false);

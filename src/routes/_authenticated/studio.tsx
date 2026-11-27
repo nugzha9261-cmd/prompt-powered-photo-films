@@ -1,5 +1,5 @@
 import { creditsKey, openPaywall } from "@/hooks/use-credits";
-import { OUT_OF_CREDITS } from "@/lib/credits";
+import { OUT_OF_CREDITS, videoCreditCost } from "@/lib/credits";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -406,7 +406,7 @@ function Studio() {
               <div>
                 <StepLabel n={4}>Length</StepLabel>
                 <Segmented
-                  options={DURATIONS.map((d) => ({ value: d, label: `${d}s` }))}
+                  options={DURATIONS.map((d) => ({ value: d, label: `${d}s · ${videoCreditCost(d)} credits` }))}
                   value={duration}
                   onChange={setDuration}
                   disabled={busy}
@@ -434,7 +434,7 @@ function Studio() {
               onClick={generate}
             >
               {busy ? <Loader2 className="animate-spin" /> : <Sparkles />}
-              {busy ? "Developing your video…" : "Bring it to life"}
+              {busy ? "Developing your video…" : `Generate video · ${videoCreditCost(duration)} credits`}
             </Button>
             </div>
           </div>
